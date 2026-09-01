@@ -788,15 +788,10 @@
       // ---------- 数据 ----------
       let jobCards = [];
       let talentCards = [];
-
-      // 所属部门（可配置）
       let departments = ['硬件研发部', '软件研发部', '经营管理部', '市场部', '品牌与体验部', '产品部'];
-
-      // 权限状态
       let isAdmin = false;
       const ADMIN_PASSWORD = 'admin123';
 
-      // 分类配置
       const categories = [
         { id: 'jobs', label: '职位管理', icon: 'fa-briefcase' },
         { id: 'talent', label: '人才库', icon: 'fa-users' },
@@ -835,7 +830,7 @@
         });
       }
 
-      // ---------- 渲染部门下拉选项 ----------
+      // ---------- 渲染部门下拉 ----------
       function renderDeptOptions(selectEl) {
         if (!selectEl) return;
         selectEl.innerHTML = '';
@@ -848,4 +843,179 @@
       }
 
       // ---------- 渲染内容 ----------
-      function render
+      function renderContent() {
+        let html = '';
+
+        // ---- 职位管理 ----
+        html += `<section class="category-block" id="section-jobs" data-category="jobs">`;
+        html += `<div class="category-header">
+          <h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>· 分类</small></h2>
+          <button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button>
+        </div>`;
+        html += `<div class="card-grid" id="jobCardGrid">`;
+        if (jobCards.length === 0) {
+          html += `<div class="empty-tip">暂无职位，点击「新增职位」添加</div>`;
+        } else {
+          jobCards.forEach(card => {
+            html += `<div class="card">
+              <div class="card-icon"><i class="fas ${card.icon}"></i></div>
+              <div class="card-body">
+                <div class="card-title">${card.title}</div>
+                <div class="card-desc">${card.desc}</div>
+              </div>
+            </div>`;
+          });
+        }
+        html += `</div></section>`;
+
+        // ---- 人才库 ----
+        html += `<section class="category-block" id="section-talent" data-category="talent">`;
+        html += `<div class="category-header">
+          <h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>· 分类</small></h2>
+        </div>`;
+        html += `<div class="filter-section" id="talentFilter">
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label>应聘职位</label>
+              <input type="text" id="filterPosition" placeholder="输入职位关键词" />
+            </div>
+            <div class="filter-item">
+              <label>候选人姓名</label>
+              <input type="text" id="filterName" placeholder="输入姓名关键词" />
+            </div>
+            <div class="filter-item">
+              <label>最高学历</label>
+              <select id="filterDegree">
+                <option value="all">全部</option>
+                <option value="大专">大专</option>
+                <option value="本科">本科</option>
+                <option value="硕士">硕士</option>
+                <option value="博士">博士</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>工作年限</label>
+              <select id="filterExperience">
+                <option value="all">全部</option>
+                <option value="应届生">应届生</option>
+                <option value="1-3年">1-3年</option>
+                <option value="3-5年">3-5年</option>
+                <option value="5-10年">5-10年</option>
+                <option value="10年以上">10年以上</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>当前状态</label>
+              <select id="filterStatus">
+                <option value="all">全部</option>
+                <option value="在职">在职</option>
+                <option value="离职">离职</option>
+                <option value="待业">待业</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>来源渠道</label>
+              <select id="filterSource">
+                <option value="all">全部</option>
+                <option value="内推">内推</option>
+                <option value="官方网站">官方网站</option>
+                <option value="boss">boss</option>
+                <option value="猎头">猎头</option>
+                <option value="小红书">小红书</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>投递日期</label>
+              <div class="filter-date-group">
+                <input type="date" id="filterDateStart" />
+                <span>至</span>
+                <input type="date" id="filterDateEnd" />
+              </div>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button class="btn" id="filterApplyBtn"><i class="fas fa-search"></i> 筛选</button>
+            <button class="btn" id="filterResetBtn"><i class="fas fa-undo"></i> 重置</button>
+          </div>
+        </div>`;
+        html += `<div class="card-grid" id="talentCardGrid">`;
+        if (talentCards.length === 0) {
+          html += `<div class="empty-tip">暂无候选人</div>`;
+        } else {
+          talentCards.forEach(card => {
+            html += `<div class="card">
+              <div class="card-icon"><i class="fas ${card.icon}"></i></div>
+              <div class="card-body">
+                <div class="card-title">${card.title}</div>
+                <div class="card-desc">${card.desc}</div>
+              </div>
+            </div>`;
+          });
+        }
+        html += `</div></section>`;
+
+        // ---- 系统设置 ----
+        html += `<section class="category-block" id="section-settings" data-category="settings">`;
+        html += `<div class="category-header">
+          <h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>· 管理</small></h2>
+        </div>`;
+        html += `<div class="settings-section">
+          <div class="lock-banner" id="lockBanner">
+            <div class="lock-text">
+              <i class="fas ${isAdmin ? 'fa-unlock' : 'fa-lock'}"></i>
+              当前状态：<span class="${isAdmin ? 'unlocked-badge' : 'locked-badge'}">${isAdmin ? '已解锁' : '已锁定'}</span>
+              ${isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑'}
+            </div>
+            <button class="unlock-btn" id="toggleAdminBtn">
+              <i class="fas ${isAdmin ? 'fa-lock' : 'fa-key'}"></i>
+              ${isAdmin ? '锁定' : '解锁'}
+            </button>
+          </div>
+          <div class="setting-group">
+            <div class="setting-label">
+              <i class="fas fa-building" style="color:#3b82f6;"></i> 所属部门管理
+              <small>${isAdmin ? '（可编辑）' : '（只读）'}</small>
+            </div>
+            <div class="settings-item-list" id="deptList">
+              ${departments.map(dept => `
+                <div class="settings-item">
+                  ${dept}
+                  ${isAdmin ? `<button class="del-btn" data-dept="${dept}"><i class="fas fa-times"></i></button>` : ''}
+                </div>
+              `).join('')}
+            </div>
+            ${isAdmin ? `
+            <div class="settings-add-row">
+              <input type="text" id="newDeptInput" placeholder="输入新部门名称..." />
+              <button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加部门</button>
+            </div>
+            ` : ''}
+          </div>
+        </div>`;
+        html += `</section>`;
+
+        contentContainer.innerHTML = html;
+
+        // ---- 绑定事件 ----
+        document.getElementById('addJobBtn')?.addEventListener('click', () => {
+          modalOverlay.classList.add('active');
+          document.getElementById('jobTitle').value = '';
+          document.getElementById('jobDuty').value = '';
+          document.getElementById('jobManager').value = '';
+          document.getElementById('jobDate').value = '';
+          document.getElementById('jobStatus').value = '招聘中';
+          const deptSelect = document.getElementById('jobDept');
+          renderDeptOptions(deptSelect);
+        });
+
+        document.getElementById('filterApplyBtn')?.addEventListener('click', applyTalentFilter);
+        document.getElementById('filterResetBtn')?.addEventListener('click', resetTalentFilter);
+
+        document.querySelectorAll('#talentFilter input, #talentFilter select').forEach(el => {
+          el.addEventListener('input', applyTalentFilter);
+          el.addEventListener('change', applyTalentFilter);
+        });
+
+        filterInputs = {
+          position: document.getElementById('filterPosition'),
+          name:
