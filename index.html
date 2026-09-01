@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>招聘系统 · 简历管理</title>
+    <title>招聘系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ===== 全局 ===== */
@@ -143,14 +143,6 @@
         .category-title i {
             color: #2563eb;
         }
-        .category-title small {
-            font-weight: 400;
-            font-size: 13px;
-            color: #6b7280;
-            background: #e9edf4;
-            padding: 2px 12px;
-            border-radius: 20px;
-        }
 
         .btn-primary {
             background: #2563eb;
@@ -199,19 +191,6 @@
         }
         .btn-outline:hover {
             background: #f1f5f9;
-        }
-        .btn-success {
-            background: #22c55e;
-            border: none;
-            color: #fff;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .btn-success:hover {
-            background: #16a34a;
         }
         .btn-danger {
             background: #ef4444;
@@ -350,7 +329,7 @@
             grid-column: 1 / -1;
         }
 
-        /* ===== 简历卡片（带状态） ===== */
+        /* ===== 简历卡片 ===== */
         .resume-card {
             background: #fff;
             border-radius: 14px;
@@ -653,11 +632,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-        .modal .form-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
         .modal-actions {
             display: flex;
             justify-content: flex-end;
@@ -791,8 +765,7 @@
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 10px;
             }
-            .modal .form-row,
-            .modal .form-row-3 {
+            .modal .form-row {
                 grid-template-columns: 1fr;
             }
         }
@@ -919,6 +892,31 @@
         </div>
     </div>
 
+    <!-- ===== 新增职位弹窗 ===== -->
+    <div class="modal-overlay" id="jobModalOverlay">
+        <div class="modal">
+            <h3><i class="fas fa-briefcase" style="color:#2563eb;"></i> 新增职位</h3>
+            <div class="form-group"><label>职位名称 *</label><input type="text" id="jobTitle" placeholder="例如：前端开发工程师" /></div>
+            <div class="form-group"><label>岗位职责</label><textarea id="jobDuty" placeholder="描述岗位核心职责..."></textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>所属部门 *</label><select id="jobDept"></select></div>
+                <div class="form-group"><label>HC（人数）</label><input type="number" id="jobHC" placeholder="例如：3" min="1" /></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>用人经理</label><input type="text" id="jobManager" placeholder="输入人员名称" /></div>
+                <div class="form-group"><label>职位开设时间</label><input type="date" id="jobDate" /></div>
+            </div>
+            <div class="form-group">
+                <label>职位状态</label>
+                <select id="jobStatus"><option value="招聘中" selected>招聘中</option><option value="招聘截止">招聘截止</option></select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="jobModalCancel">取消</button>
+                <button class="btn btn-primary" id="jobModalConfirm">确认新增</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== 密码验证弹窗 ===== -->
     <div class="modal-overlay password-modal" id="passwordModal">
         <div class="modal">
@@ -941,26 +939,9 @@
         // ============================================================
         var jobCards = [];
         var departments = ['硬件研发部', '软件研发部', '经营管理部', '市场部', '品牌与体验部', '产品部'];
-
-        // 候选人数据：以联系方式为唯一标识
         var candidates = {};
         var candidateList = [];
-
-        // 简历阶段流程
         var STAGES = ['筛选中', '筛选通过', '进入一面', '进入二面', '进入三面', 'offer沟通', 'offer'];
-        var STAGE_COLORS = {
-            '筛选中': '#22c55e',
-            '筛选通过': '#22c55e',
-            '进入一面': '#22c55e',
-            '进入二面': '#22c55e',
-            '进入三面': '#22c55e',
-            'offer沟通': '#22c55e',
-            'offer': '#22c55e'
-        };
-
-        // 岗位面试配置
-        var jobInterviewConfig = {};
-
         var isAdmin = false;
         var ADMIN_PASSWORD = 'admin123';
 
@@ -1051,9 +1032,7 @@
             }
         }
 
-        // 模拟简历解析（实际项目中需要调用后端API）
         function parseResume(file) {
-            // 模拟解析结果
             return {
                 name: '张明',
                 gender: '男',
@@ -1077,7 +1056,7 @@
             if (!page) return;
             var html = '';
             html += '<div class="category-header">';
-            html += '<h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>分类</small></h2>';
+            html += '<h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理</h2>';
             html += '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
             html += '<button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button>';
             html += '</div></div>';
@@ -1104,21 +1083,14 @@
             page.innerHTML = html;
 
             document.getElementById('addJobBtn').addEventListener('click', function() {
-                modalOverlay.classList.add('active');
-                document.getElementById('resumeName').value = '';
-                document.getElementById('resumeGender').value = '';
-                document.getElementById('resumeAge').value = '';
-                document.getElementById('resumeExperience').value = '';
-                document.getElementById('resumeContact').value = '';
-                document.getElementById('resumeWorkExp').value = '';
-                document.getElementById('resumeInternExp').value = '';
-                document.getElementById('resumeFormerEmployee').value = '否';
-                document.getElementById('resumeRehire').value = '是';
-                document.getElementById('resumeSource').value = 'boss';
-                renderJobOptions(document.getElementById('resumeJob'));
-                // 隐藏文件上传提示
-                document.querySelector('#resumeModal .modal h3').innerHTML =
-                    '<i class="fas fa-file-upload" style="color:#2563eb;"></i> 上传简历';
+                document.getElementById('jobModalOverlay').classList.add('active');
+                document.getElementById('jobTitle').value = '';
+                document.getElementById('jobDuty').value = '';
+                document.getElementById('jobManager').value = '';
+                document.getElementById('jobDate').value = '';
+                document.getElementById('jobHC').value = '';
+                document.getElementById('jobStatus').value = '招聘中';
+                renderDeptOptions(document.getElementById('jobDept'));
             });
         }
 
@@ -1135,7 +1107,6 @@
             document.getElementById('resumeFormerEmployee').value = '否';
             document.getElementById('resumeRehire').value = '是';
             document.getElementById('resumeSource').value = 'boss';
-            // 自动选中推荐岗位
             renderJobOptions(document.getElementById('resumeJob'));
             var jobSelect = document.getElementById('resumeJob');
             for (var i = 0; i < jobSelect.options.length; i++) {
@@ -1151,7 +1122,6 @@
         // 配置面试官
         function configureInterview(jobTitle) {
             alert('配置面试官功能\n职位：' + jobTitle + '\n可设置：一面面试官、二面面试官、三面面试官\n总面试轮次：3轮');
-            // 实际项目可弹出自定义配置弹窗
         }
 
         // ---- 人才库页面 ----
@@ -1160,7 +1130,7 @@
             if (!page) return;
             var html = '';
             html += '<div class="category-header">';
-            html += '<h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>分类</small></h2>';
+            html += '<h2 class="category-title"><i class="fas fa-users"></i> 人才库</h2>';
             html += '</div>';
             html += '<div class="filter-section">';
             html += '<div class="filter-grid">';
@@ -1186,7 +1156,6 @@
                 document.getElementById('talentSearchStage').value = 'all';
                 renderTalentList();
             });
-            // 输入即搜索
             document.querySelectorAll('#talentSearchName, #talentSearchJob, #talentSearchStage').forEach(function(el) {
                 el.addEventListener('input', renderTalentList);
                 el.addEventListener('change', renderTalentList);
@@ -1252,8 +1221,7 @@
             if (!page) return;
             var html = '';
             html += '<div class="category-header">';
-            html += '<h2 class="category-title"><i class="fas fa-file-alt"></i> 简历管理 <small>共 ' + candidateList.length +
-                ' 份简历</small></h2>';
+            html += '<h2 class="category-title"><i class="fas fa-file-alt"></i> 简历管理</h2>';
             html += '<button class="btn-primary" id="uploadResumeBtn"><i class="fas fa-upload"></i> 上传简历</button>';
             html += '</div>';
             html += '<div class="filter-section">';
@@ -1360,19 +1328,12 @@
         // ============================================================
         // 简历操作函数
         // ============================================================
-
-        // 推进阶段
         function advanceStage(contact) {
             var c = candidates[contact];
             if (!c) return;
             var currentIdx = STAGES.indexOf(c.stage);
             if (currentIdx < STAGES.length - 1) {
                 c.stage = STAGES[currentIdx + 1];
-                // 如果进入面试阶段，记录面试官
-                if (c.stage.indexOf('进入') === 0) {
-                    var round = c.stage.replace('进入', '').replace('面', '');
-                    // 这里可关联面试官配置
-                }
                 renderResumeList();
                 renderTalentList();
                 renderNavigation();
@@ -1381,14 +1342,10 @@
             }
         }
 
-        // 淘汰（失败）
         function failStage(contact) {
             var c = candidates[contact];
             if (!c) return;
             if (confirm('确定要淘汰候选人「' + c.name + '」吗？')) {
-                // 将当前阶段标记为失败，但不推进到下一阶段
-                // 我们移除该候选人，或标记为淘汰
-                // 这里简单处理：从列表中移除
                 delete candidates[contact];
                 candidateList = candidateList.filter(function(item) {
                     return item.contact !== contact;
@@ -1399,7 +1356,6 @@
             }
         }
 
-        // 查看简历详情
         function viewResume(contact) {
             var c = candidates[contact];
             if (!c) return;
@@ -1428,7 +1384,7 @@
             if (!page) return;
             var html = '';
             html += '<div class="category-header">';
-            html += '<h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>管理</small></h2>';
+            html += '<h2 class="category-title"><i class="fas fa-cog"></i> 系统设置</h2>';
             html += '</div>';
             html += '<div class="settings-section">';
 
@@ -1574,7 +1530,6 @@
             if (!contact) { alert('请输入联系方式'); return; }
             if (!jobTitle) { alert('请选择推荐岗位'); return; }
 
-            // 检查是否已存在相同联系方式的候选人
             if (candidates[contact]) {
                 if (!confirm('已存在相同联系方式的候选人「' + candidates[contact].name + '」，是否覆盖更新？')) return;
             }
@@ -1591,14 +1546,11 @@
                 rehire: rehire,
                 source: source,
                 jobTitle: jobTitle,
-                stage: '筛选中' // 默认状态
+                stage: '筛选中'
             };
 
-            // 保存或更新
             if (candidates[contact]) {
-                // 保留原阶段，覆盖其他信息
                 candidateData.stage = candidates[contact].stage;
-                // 移除旧记录
                 candidateList = candidateList.filter(function(c) { return c.contact !== contact; });
             }
             candidates[contact] = candidateData;
@@ -1615,7 +1567,6 @@
             if (e.target === modalOverlay) modalOverlay.classList.remove('active');
         });
 
-        // 文件上传拖拽
         uploadArea.addEventListener('click', function() {
             resumeFileInput.click();
         });
@@ -1636,9 +1587,8 @@
             e.preventDefault();
             this.style.borderColor = '#e2e6ed';
             this.style.background = '#fafbfc';
-            var files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileUpload(files[0]);
+            if (e.dataTransfer.files.length > 0) {
+                handleFileUpload(e.dataTransfer.files[0]);
             }
         });
 
@@ -1654,7 +1604,6 @@
                 alert('请上传 .doc, .docx 或 .pdf 格式的文件');
                 return;
             }
-            // 模拟解析（实际需调用后端API）
             var parsed = parseResume(file);
             document.getElementById('resumeName').value = parsed.name || '';
             document.getElementById('resumeGender').value = parsed.gender || '';
@@ -1666,6 +1615,31 @@
             document.getElementById('resumeFormerEmployee').value = parsed.formerEmployee || '否';
             document.getElementById('resumeRehire').value = parsed.rehire || '是';
             alert('✅ 简历解析完成！请检查并补充信息。');
+        }
+
+        // ============================================================
+        // 新增职位
+        // ============================================================
+        function addNewJob() {
+            var title = document.getElementById('jobTitle').value.trim();
+            var dept = document.getElementById('jobDept').value;
+            var hc = document.getElementById('jobHC').value.trim();
+            var manager = document.getElementById('jobManager').value.trim();
+            var date = document.getElementById('jobDate').value;
+            var status = document.getElementById('jobStatus').value;
+
+            if (!title) { alert('请输入职位名称'); return; }
+
+            var hcText = hc ? ' · HC:' + hc : '';
+            var newCard = {
+                title: title,
+                desc: dept + ' · ' + (date || '近期') + ' · ' + status + hcText,
+                icon: 'fa-briefcase'
+            };
+            jobCards.push(newCard);
+            document.getElementById('jobModalOverlay').classList.remove('active');
+            renderJobsPage();
+            renderNavigation();
         }
 
         // ============================================================
@@ -1692,33 +1666,6 @@
         });
 
         // ============================================================
-        // 新增职位（简化版）
-        // ============================================================
-        function addNewJob() {
-            var title = document.getElementById('jobTitle').value.trim();
-            var dept = document.getElementById('jobDept').value;
-            var hc = document.getElementById('jobHC').value.trim();
-            var manager = document.getElementById('jobManager').value.trim();
-            var date = document.getElementById('jobDate').value;
-            var status = document.getElementById('jobStatus').value;
-
-            if (!title) { alert('请输入职位名称'); return; }
-
-            var hcText = hc ? ' · HC:' + hc : '';
-            var newCard = {
-                title: title,
-                desc: dept + ' · ' + (date || '近期') + ' · ' + status + hcText,
-                icon: 'fa-briefcase'
-            };
-            jobCards.push(newCard);
-
-            // 关闭弹窗
-            document.getElementById('jobModalOverlay').classList.remove('active');
-            renderJobsPage();
-            renderNavigation();
-        }
-
-        // ============================================================
         // 移动端菜单
         // ============================================================
         function openMobileMenu() { sidebar.classList.add('open');
@@ -1739,10 +1686,28 @@
                 closeMobileMenu(); });
 
         // ============================================================
+        // 暴露全局函数
+        // ============================================================
+        window.uploadResumeForJob = uploadResumeForJob;
+        window.configureInterview = configureInterview;
+        window.advanceStage = advanceStage;
+        window.failStage = failStage;
+        window.viewResume = viewResume;
+
+        // ============================================================
+        // 弹窗事件绑定
+        // ============================================================
+        document.getElementById('jobModalCancel').addEventListener('click', function() {
+            document.getElementById('jobModalOverlay').classList.remove('active');
+        });
+        document.getElementById('jobModalConfirm').addEventListener('click', addNewJob);
+        document.getElementById('jobModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        // ============================================================
         // 初始化
         // ============================================================
-
-        // 创建页面容器
         contentContainer.innerHTML = '';
         for (var i = 0; i < categories.length; i++) {
             var pageDiv = document.createElement('div');
@@ -1752,61 +1717,12 @@
             contentContainer.appendChild(pageDiv);
         }
 
-        // 添加新增职位弹窗（在页面底部）
-        var jobModalHTML = `
-        <div class="modal-overlay" id="jobModalOverlay">
-          <div class="modal">
-            <h3><i class="fas fa-briefcase" style="color:#2563eb;"></i> 新增职位</h3>
-            <div class="form-group"><label>职位名称 *</label><input type="text" id="jobTitle" placeholder="例如：前端开发工程师" /></div>
-            <div class="form-group"><label>岗位职责</label><textarea id="jobDuty" placeholder="描述岗位核心职责..."></textarea></div>
-            <div class="form-row">
-              <div class="form-group"><label>所属部门 *</label><select id="jobDept"></select></div>
-              <div class="form-group"><label>HC（人数）</label><input type="number" id="jobHC" placeholder="例如：3" min="1" /></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>用人经理</label><input type="text" id="jobManager" placeholder="输入人员名称" /></div>
-              <div class="form-group"><label>职位开设时间</label><input type="date" id="jobDate" /></div>
-            </div>
-            <div class="form-group">
-              <label>职位状态</label>
-              <select id="jobStatus"><option value="招聘中" selected>招聘中</option><option value="招聘截止">招聘截止</option></select>
-            </div>
-            <div class="modal-actions">
-              <button class="btn btn-outline" id="jobModalCancel">取消</button>
-              <button class="btn btn-primary" id="jobModalConfirm">确认新增</button>
-            </div>
-          </div>
-        </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', jobModalHTML);
-
-        document.getElementById('jobModalCancel').addEventListener('click', function() {
-            document.getElementById('jobModalOverlay').classList.remove('active');
-        });
-        document.getElementById('jobModalConfirm').addEventListener('click', addNewJob);
-        document.getElementById('jobModalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) this.classList.remove('active');
-        });
-
-        // 暴露全局函数
-        window.uploadResumeForJob = uploadResumeForJob;
-        window.configureInterview = configureInterview;
-        window.advanceStage = advanceStage;
-        window.failStage = failStage;
-        window.viewResume = viewResume;
-
         renderNavigation();
-
-        // 初始化各页面
-        var initialPage = document.querySelector('.page[data-page="' + currentPage + '"]');
-        if (initialPage) initialPage.classList.add('active');
-
         renderJobsPage();
         renderTalentPage();
         renderResumesPage();
         renderSettingsPage();
 
-        // 初始化部门下拉
         renderDeptOptions(document.getElementById('jobDept'));
     </script>
 </body>
