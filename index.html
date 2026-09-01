@@ -94,10 +94,27 @@
       margin: 0 auto;
       width: 100%;
     }
-    .category-block {
-      margin-bottom: 40px;
-      scroll-margin-top: 16px;
+
+    /* ===== 页面容器（单页切换） ===== */
+    .page {
+      display: none;
+      animation: fadeIn 0.25s ease;
     }
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .category-header {
       display: flex;
       align-items: center;
@@ -125,6 +142,7 @@
       padding: 2px 12px;
       border-radius: 20px;
     }
+
     .btn-primary {
       background: #2563eb;
       border: none;
@@ -753,6 +771,8 @@
       { id: 'settings', label: '系统设置', icon: 'fa-cog' }
     ];
 
+    var currentPage = 'jobs';
+
     // DOM
     var navMenu = document.getElementById('navMenu');
     var contentContainer = document.getElementById('contentContainer');
@@ -768,54 +788,56 @@
     var adminPasswordInput = document.getElementById('adminPassword');
 
     // ============================================================
-    // 渲染
+    // 渲染导航
     // ============================================================
     function renderNavigation() {
       navMenu.innerHTML = '';
       for (var i = 0; i < categories.length; i++) {
         var cat = categories[i];
         var btn = document.createElement('button');
-        btn.className = 'nav-btn' + (i === 0 ? ' active' : '');
+        btn.className = 'nav-btn' + (cat.id === currentPage ? ' active' : '');
         btn.dataset.target = cat.id;
         btn.innerHTML = '<i class="fas ' + cat.icon + '"></i> ' + cat.label;
         btn.addEventListener('click', function() {
-          scrollToCategory(this.dataset.target);
+          switchPage(this.dataset.target);
           closeMobileMenu();
         });
         navMenu.appendChild(btn);
       }
     }
 
-    function renderDeptOptions(selectEl) {
-      if (!selectEl) return;
-      selectEl.innerHTML = '';
-      for (var i = 0; i < departments.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = departments[i];
-        opt.textContent = departments[i];
-        selectEl.appendChild(opt);
+    // ============================================================
+    // 页面切换
+    // ============================================================
+    function switchPage(pageId) {
+      currentPage = pageId;
+      renderNavigation();
+
+      // 显示对应页面
+      var pages = document.querySelectorAll('.page');
+      for (var i = 0; i < pages.length; i++) {
+        pages[i].classList.toggle('active', pages[i].dataset.page === pageId);
       }
+
+      // 更新页面内容（如果是首次加载或数据变化）
+      if (pageId === 'jobs') renderJobsPage();
+      else if (pageId === 'talent') renderTalentPage();
+      else if (pageId === 'settings') renderSettingsPage();
     }
 
-    // 生成部门下拉选项（用于人才库筛选）
-    function renderDeptFilterOptions(selectEl) {
-      if (!selectEl) return;
-      selectEl.innerHTML = '<option value="all">全部</option>';
-      for (var i = 0; i < departments.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = departments[i];
-        opt.textContent = departments[i];
-        selectEl.appendChild(opt);
-      }
-    }
+    // ============================================================
+    // 渲染各页面
+    // ============================================================
 
-    function renderContent() {
+    // ---- 职位管理页面 ----
+    function renderJobsPage() {
+      var page = document.querySelector('.page[data-page="jobs"]');
+      if (!page) return;
       var html = '';
-
-      // ===== 职位管理 =====
-      html += '<section class="category-block" id="section-jobs" data-category="jobs">';
-      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>分类</small></h2>';
-      html += '<button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button></div>';
+      html += '<div class="category-header">';
+      html += '<h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>分类</small></h2>';
+      html += '<button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button>';
+      html += '</div>';
       html += '<div class="card-grid" id="jobCardGrid">';
       if (jobCards.length === 0) {
         html += '<div class="empty-tip">暂无职位，点击「新增职位」添加</div>';
@@ -827,12 +849,31 @@
             '</div></div></div>';
         }
       }
-      html += '</div></section>';
+      html += '</div>';
+      page.innerHTML = html;
 
-      // ===== 人才库 =====
-      html += '<section class="category-block" id="section-talent" data-category="talent">';
-      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>分类</small></h2></div>';
-      html += '<div class="filter-section"><div class="filter-grid">';
+      document.getElementById('addJobBtn').addEventListener('click', function() {
+        modalOverlay.classList.add('active');
+        document.getElementById('jobTitle').value = '';
+        document.getElementById('jobDuty').value = '';
+        document.getElementById('jobManager').value = '';
+        document.getElementById('jobDate').value = '';
+        document.getElementById('jobHC').value = '';
+        document.getElementById('jobStatus').value = '招聘中';
+        renderDeptOptions(document.getElementById('jobDept'));
+      });
+    }
+
+    // ---- 人才库页面 ----
+    function renderTalentPage() {
+      var page = document.querySelector('.page[data-page="talent"]');
+      if (!page) return;
+      var html = '';
+      html += '<div class="category-header">';
+      html += '<h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>分类</small></h2>';
+      html += '</div>';
+      html += '<div class="filter-section" id="talentFilter">';
+      html += '<div class="filter-grid">';
       html += '<div class="filter-item"><label>应聘职位</label><input type="text" id="filterPosition" placeholder="输入职位关键词" /></div>';
       html += '<div class="filter-item"><label>候选人姓名</label><input type="text" id="filterName" placeholder="输入姓名关键词" /></div>';
       html +=
@@ -843,7 +884,6 @@
         '<div class="filter-item"><label>当前状态</label><select id="filterStatus"><option value="all">全部</option><option value="在职">在职</option><option value="离职">离职</option><option value="待业">待业</option></select></div>';
       html +=
         '<div class="filter-item"><label>来源渠道</label><select id="filterSource"><option value="all">全部</option><option value="内推">内推</option><option value="官方网站">官方网站</option><option value="boss">boss</option><option value="猎头">猎头</option><option value="小红书">小红书</option></select></div>';
-      // ---- 新增：所属部门筛选 ----
       html += '<div class="filter-item"><label>所属部门</label><select id="filterDept"></select></div>';
       html += '<div class="filter-item"><label>投递日期</label><div class="filter-date-group"><input type="date" id="filterDateStart" /><span>至</span><input type="date" id="filterDateEnd" /></div></div>';
       html += '</div><div class="filter-actions">';
@@ -861,18 +901,41 @@
             '</div></div></div>';
         }
       }
-      html += '</div></section>';
+      html += '</div>';
+      page.innerHTML = html;
 
-      // ===== 系统设置 =====
-      html += '<section class="category-block" id="section-settings" data-category="settings">';
-      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>管理</small></h2></div>';
+      // 填充部门筛选下拉
+      var filterDept = document.getElementById('filterDept');
+      if (filterDept) renderDeptFilterOptions(filterDept);
+
+      // 绑定筛选事件
+      document.getElementById('filterApplyBtn').addEventListener('click', applyTalentFilter);
+      document.getElementById('filterResetBtn').addEventListener('click', resetTalentFilter);
+
+      var inputs = document.querySelectorAll('#talentFilter input, #talentFilter select');
+      for (var fi = 0; fi < inputs.length; fi++) {
+        inputs[fi].addEventListener('input', applyTalentFilter);
+        inputs[fi].addEventListener('change', applyTalentFilter);
+      }
+    }
+
+    // ---- 系统设置页面 ----
+    function renderSettingsPage() {
+      var page = document.querySelector('.page[data-page="settings"]');
+      if (!page) return;
+      var html = '';
+      html += '<div class="category-header">';
+      html += '<h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>管理</small></h2>';
+      html += '</div>';
       html += '<div class="settings-section">';
+
       var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
       var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
       var badgeTxt = isAdmin ? '已解锁' : '已锁定';
       var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
       var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
       var btnTxt = isAdmin ? '锁定' : '解锁';
+
       html += '<div class="lock-banner" id="lockBanner">';
       html += '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls + '">' + badgeTxt +
         '</span> ' + statusTxt + '</div>';
@@ -903,50 +966,11 @@
         html += '<button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加</button>';
         html += '</div>';
       }
-      html += '</div></div></section>';
+      html += '</div></div></div>';
+      page.innerHTML = html;
 
-      contentContainer.innerHTML = html;
-
-      // ---- 填充部门筛选下拉 ----
-      var filterDept = document.getElementById('filterDept');
-      if (filterDept) {
-        renderDeptFilterOptions(filterDept);
-      }
-
-      // ============================================================
       // 事件绑定
-      // ============================================================
-
-      // 新增职位
-      var addJobBtn = document.getElementById('addJobBtn');
-      if (addJobBtn) {
-        addJobBtn.addEventListener('click', function() {
-          modalOverlay.classList.add('active');
-          document.getElementById('jobTitle').value = '';
-          document.getElementById('jobDuty').value = '';
-          document.getElementById('jobManager').value = '';
-          document.getElementById('jobDate').value = '';
-          document.getElementById('jobHC').value = '';
-          document.getElementById('jobStatus').value = '招聘中';
-          renderDeptOptions(document.getElementById('jobDept'));
-        });
-      }
-
-      // 筛选
-      var filterApply = document.getElementById('filterApplyBtn');
-      if (filterApply) filterApply.addEventListener('click', applyTalentFilter);
-      var filterReset = document.getElementById('filterResetBtn');
-      if (filterReset) filterReset.addEventListener('click', resetTalentFilter);
-
-      var inputs = document.querySelectorAll('#talentFilter input, #talentFilter select');
-      for (var fi = 0; fi < inputs.length; fi++) {
-        inputs[fi].addEventListener('input', applyTalentFilter);
-        inputs[fi].addEventListener('change', applyTalentFilter);
-      }
-
-      // 权限切换
-      var toggleBtn = document.getElementById('toggleAdminBtn');
-      if (toggleBtn) toggleBtn.addEventListener('click', toggleAdmin);
+      document.getElementById('toggleAdminBtn').addEventListener('click', toggleAdmin);
 
       // 显示添加部门输入框
       var showDeptAddBtn = document.getElementById('showDeptAddBtn');
@@ -974,12 +998,10 @@
               if (departments[idx] !== deptName) newDepts.push(departments[idx]);
             }
             departments = newDepts;
-            updateSettingsUI();
-            renderDeptOptions(document.getElementById('jobDept'));
-            // 更新人才库筛选中的部门下拉
-            var filterDeptEl = document.getElementById('filterDept');
-            if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
-            renderNavigation();
+            // 刷新当前页面
+            renderSettingsPage();
+            // 更新其他页面的下拉
+            updateAllDeptSelects();
           }
         });
       }
@@ -997,11 +1019,8 @@
           }
           departments.push(name);
           input.value = '';
-          updateSettingsUI();
-          renderDeptOptions(document.getElementById('jobDept'));
-          var filterDeptEl = document.getElementById('filterDept');
-          if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
-          renderNavigation();
+          renderSettingsPage();
+          updateAllDeptSelects();
         });
       }
 
@@ -1014,64 +1033,50 @@
           }
         });
       }
-
-      renderNavigation();
-    }
-
-    function updateSettingsUI() {
-      var list = document.getElementById('deptList');
-      if (!list) return;
-      var html = '';
-      for (var i = 0; i < departments.length; i++) {
-        var d = departments[i];
-        html += '<div class="settings-item">' + d;
-        if (isAdmin) {
-          html += '<button class="del-btn" data-dept="' + d + '"><i class="fas fa-times"></i></button>';
-        }
-        html += '</div>';
-      }
-      list.innerHTML = html;
-
-      var delBtns = document.querySelectorAll('.del-btn');
-      for (var db = 0; db < delBtns.length; db++) {
-        delBtns[db].addEventListener('click', function() {
-          if (!isAdmin) return;
-          var deptName = this.dataset.dept;
-          if (confirm('确定要删除部门「' + deptName + '」吗？')) {
-            var newDepts = [];
-            for (var idx = 0; idx < departments.length; idx++) {
-              if (departments[idx] !== deptName) newDepts.push(departments[idx]);
-            }
-            departments = newDepts;
-            updateSettingsUI();
-            renderDeptOptions(document.getElementById('jobDept'));
-            var filterDeptEl = document.getElementById('filterDept');
-            if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
-            renderNavigation();
-          }
-        });
-      }
-
-      var showBtn = document.getElementById('showDeptAddBtn');
-      var addRow = document.getElementById('deptAddRow');
-      if (isAdmin) {
-        if (addRow) addRow.style.display = 'flex';
-      } else {
-        if (addRow) addRow.style.display = 'none';
-      }
-
-      updateLockUI();
     }
 
     // ============================================================
-    // 权限
+    // 工具函数
+    // ============================================================
+    function renderDeptOptions(selectEl) {
+      if (!selectEl) return;
+      selectEl.innerHTML = '';
+      for (var i = 0; i < departments.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = departments[i];
+        opt.textContent = departments[i];
+        selectEl.appendChild(opt);
+      }
+    }
+
+    function renderDeptFilterOptions(selectEl) {
+      if (!selectEl) return;
+      selectEl.innerHTML = '<option value="all">全部</option>';
+      for (var i = 0; i < departments.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = departments[i];
+        opt.textContent = departments[i];
+        selectEl.appendChild(opt);
+      }
+    }
+
+    function updateAllDeptSelects() {
+      // 更新新增职位弹窗中的部门下拉
+      var jobDept = document.getElementById('jobDept');
+      if (jobDept) renderDeptOptions(jobDept);
+      // 更新人才库筛选中的部门下拉
+      var filterDept = document.getElementById('filterDept');
+      if (filterDept) renderDeptFilterOptions(filterDept);
+    }
+
+    // ============================================================
+    // 权限切换
     // ============================================================
     function toggleAdmin() {
       if (isAdmin) {
         isAdmin = false;
-        renderContent();
+        renderSettingsPage();
         renderNavigation();
-        setTimeout(updateActiveNav, 150);
       } else {
         passwordModal.classList.add('active');
         adminPasswordInput.value = '';
@@ -1079,23 +1084,8 @@
       }
     }
 
-    function updateLockUI() {
-      var banner = document.getElementById('lockBanner');
-      if (!banner) return;
-      var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
-      var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
-      var badgeTxt = isAdmin ? '已解锁' : '已锁定';
-      var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
-      var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
-      var btnTxt = isAdmin ? '锁定' : '解锁';
-      banner.innerHTML = '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls +
-        '">' + badgeTxt + '</span> ' + statusTxt +
-        '</div><button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt + '</button>';
-      document.getElementById('toggleAdminBtn').addEventListener('click', toggleAdmin);
-    }
-
     // ============================================================
-    // 筛选（含所属部门）
+    // 筛选（人才库）
     // ============================================================
     function applyTalentFilter() {
       var pos = (document.getElementById('filterPosition').value || '').trim().toLowerCase();
@@ -1103,18 +1093,18 @@
       var degree = document.getElementById('filterDegree').value;
       var exp = document.getElementById('filterExperience').value;
       var status = document.getElementById('filterStatus').value;
-      var dept = document.getElementById('filterDept').value; // 新增
+      var dept = document.getElementById('filterDept').value;
 
       var grid = document.getElementById('talentCardGrid');
       if (!grid) return;
       var cards = grid.querySelectorAll('.card');
-      var emptyTip = grid.querySelector('.empty-tip');
 
       if (talentCards.length === 0) {
-        if (!emptyTip) { var tip = document.createElement('div');
-          tip.className = 'empty-tip';
-          tip.textContent = '暂无候选人';
-          grid.appendChild(tip); }
+        var tip = grid.querySelector('.empty-tip');
+        if (!tip) { var nt = document.createElement('div');
+          nt.className = 'empty-tip';
+          nt.textContent = '暂无候选人';
+          grid.appendChild(nt); }
         return;
       }
 
@@ -1135,7 +1125,6 @@
           if (desc.indexOf(expText) === -1) show = false;
         }
         if (status !== 'all' && desc.indexOf(status) === -1) show = false;
-        // ---- 新增：所属部门筛选 ----
         if (dept !== 'all' && desc.indexOf(dept) === -1) show = false;
 
         card.style.display = show ? '' : 'none';
@@ -1144,10 +1133,10 @@
 
       var tipEl = grid.querySelector('.empty-tip');
       if (!hasVisible) {
-        if (!tipEl) { var nt = document.createElement('div');
-          nt.className = 'empty-tip';
-          nt.textContent = '没有匹配的人才';
-          grid.appendChild(nt); }
+        if (!tipEl) { var nt2 = document.createElement('div');
+          nt2.className = 'empty-tip';
+          nt2.textContent = '没有匹配的人才';
+          grid.appendChild(nt2); }
       } else {
         if (tipEl) tipEl.remove();
       }
@@ -1167,7 +1156,7 @@
     }
 
     // ============================================================
-    // 新增职位（含HC）
+    // 新增职位
     // ============================================================
     function addNewJob() {
       var title = document.getElementById('jobTitle').value.trim();
@@ -1187,52 +1176,9 @@
       };
       jobCards.push(newCard);
 
-      var grid = document.getElementById('jobCardGrid');
-      if (grid) {
-        var emptyTip = grid.querySelector('.empty-tip');
-        if (emptyTip) emptyTip.remove();
-        var cardEl = document.createElement('div');
-        cardEl.className = 'card';
-        cardEl.innerHTML = '<div class="card-icon"><i class="fas ' + newCard.icon + '"></i></div><div class="card-body"><div class="card-title">' +
-          newCard.title + '</div><div class="card-desc">' + newCard.desc + '</div></div>';
-        grid.appendChild(cardEl);
-      }
-
+      // 刷新职位管理页面
+      renderJobsPage();
       modalOverlay.classList.remove('active');
-      renderNavigation();
-    }
-
-    // ============================================================
-    // 滚动
-    // ============================================================
-    function updateActiveNav() {
-      var sections = document.querySelectorAll('.category-block');
-      var currentId = '';
-      var scrollPos = window.scrollY + 100;
-      for (var i = 0; i < sections.length; i++) {
-        var s = sections[i];
-        var top = s.offsetTop;
-        var bottom = top + s.offsetHeight;
-        if (scrollPos >= top && scrollPos < bottom) { currentId = s.dataset.category; }
-      }
-      if (!currentId && sections.length > 0) {
-        var last = sections[sections.length - 1];
-        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 10) {
-          currentId = last.dataset.category;
-        }
-      }
-      var btns = navMenu.querySelectorAll('.nav-btn');
-      for (var j = 0; j < btns.length; j++) {
-        btns[j].classList.toggle('active', btns[j].dataset.target === currentId);
-      }
-    }
-
-    function scrollToCategory(catId) {
-      var target = document.getElementById('section-' + catId);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setTimeout(updateActiveNav, 100);
-      }
     }
 
     // ============================================================
@@ -1256,7 +1202,7 @@
         closeMobileMenu(); });
 
     // ============================================================
-    // 弹窗
+    // 弹窗事件
     // ============================================================
     modalCancel.addEventListener('click', function() { modalOverlay.classList.remove('active'); });
     modalConfirm.addEventListener('click', addNewJob);
@@ -1268,9 +1214,9 @@
       if (adminPasswordInput.value.trim() === ADMIN_PASSWORD) {
         isAdmin = true;
         passwordModal.classList.remove('active');
-        renderContent();
+        renderSettingsPage();
         renderNavigation();
-        setTimeout(updateActiveNav, 150);
+        updateAllDeptSelects();
       } else {
         alert('密码错误，请重试');
         adminPasswordInput.value = '';
@@ -1284,18 +1230,25 @@
     // ============================================================
     // 初始化
     // ============================================================
-    renderNavigation();
-    renderContent();
 
-    var ticking = false;
-    window.addEventListener('scroll', function() {
-      if (!ticking) {
-        window.requestAnimationFrame(function() { updateActiveNav();
-          ticking = false; });
-        ticking = true;
-      }
-    });
-    setTimeout(updateActiveNav, 150);
+    // 创建三个页面容器
+    contentContainer.innerHTML = '';
+    for (var i = 0; i < categories.length; i++) {
+      var pageDiv = document.createElement('div');
+      pageDiv.className = 'page' + (categories[i].id === currentPage ? ' active' : '');
+      pageDiv.dataset.page = categories[i].id;
+      pageDiv.id = 'page-' + categories[i].id;
+      contentContainer.appendChild(pageDiv);
+    }
+
+    renderNavigation();
+    renderJobsPage();
+    renderTalentPage();
+    renderSettingsPage();
+
+    // 初始选中状态
+    var initialPage = document.querySelector('.page[data-page="' + currentPage + '"]');
+    if (initialPage) initialPage.classList.add('active');
   </script>
 </body>
 </html>
