@@ -1,1246 +1,1301 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>招聘系统</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        body {
-            background: #f1f4f9;
-            display: flex;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>招聘系统</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ===== 全局 ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: #f1f4f9;
+      display: flex;
+      min-height: 100vh;
+    }
 
-        /* 侧边栏 */
-        .sidebar {
-            width: 230px;
-            background: #1a2332;
-            color: #c8d0dc;
-            padding: 24px 14px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #eef2f6;
-            padding-bottom: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            margin-bottom: 18px;
-        }
-        .sidebar-logo i {
-            color: #5b8def;
-            font-size: 22px;
-        }
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 12px;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            transition: 0.15s;
-        }
-        .nav-btn i {
-            width: 18px;
-            color: #64748b;
-        }
-        .nav-btn:hover {
-            background: #2a3548;
-            color: #eef2f6;
-        }
-        .nav-btn.active {
-            background: #2a3548;
-            color: #fff;
-            font-weight: 600;
-        }
-        .nav-btn.active i {
-            color: #5b8def;
-        }
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
+    /* ===== 侧边栏 ===== */
+    .sidebar {
+      width: 230px;
+      background: #1a2332;
+      color: #c8d0dc;
+      padding: 24px 14px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #eef2f6;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 18px;
+    }
+    .sidebar-logo i {
+      color: #5b8def;
+      font-size: 22px;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: 0.15s;
+    }
+    .nav-btn i {
+      width: 18px;
+      color: #64748b;
+    }
+    .nav-btn:hover {
+      background: #2a3548;
+      color: #eef2f6;
+    }
+    .nav-btn.active {
+      background: #2a3548;
+      color: #fff;
+      font-weight: 600;
+    }
+    .nav-btn.active i {
+      color: #5b8def;
+    }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
 
-        /* 主内容 */
-        .main-content {
-            flex: 1;
-            padding: 24px 32px 50px;
-            max-width: 1320px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        .category-block {
-            margin-bottom: 40px;
-            scroll-margin-top: 16px;
-        }
-        .category-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .category-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .category-title i {
-            color: #2563eb;
-        }
-        .category-title small {
-            font-weight: 400;
-            font-size: 13px;
-            color: #6b7280;
-            background: #e9edf4;
-            padding: 2px 12px;
-            border-radius: 20px;
-        }
-        .btn-primary {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            padding: 7px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.2s;
-        }
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-        .btn-sm {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-        }
-        .btn-sm:hover {
-            background: #1d4ed8;
-        }
+    /* ===== 主内容 ===== */
+    .main-content {
+      flex: 1;
+      padding: 24px 32px 50px;
+      max-width: 1320px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .category-block {
+      margin-bottom: 40px;
+      scroll-margin-top: 16px;
+    }
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .category-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .category-title i {
+      color: #2563eb;
+    }
+    .category-title small {
+      font-weight: 400;
+      font-size: 13px;
+      color: #6b7280;
+      background: #e9edf4;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+    .btn-primary {
+      background: #2563eb;
+      border: none;
+      color: #fff;
+      padding: 7px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-sm {
+      background: #2563eb;
+      border: none;
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: 0.2s;
+    }
+    .btn-sm:hover {
+      background: #1d4ed8;
+    }
 
-        /* 筛选 */
-        .filter-section {
-            background: #fff;
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e5e9f0;
-        }
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px 16px;
-        }
-        .filter-item {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        .filter-item label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .filter-item select,
-        .filter-item input {
-            padding: 7px 10px;
-            border-radius: 8px;
-            border: 1px solid #e2e6ed;
-            background: #fafbfc;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-            width: 100%;
-        }
-        .filter-item select:focus,
-        .filter-item input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-        .filter-date-group {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .filter-date-group input {
-            flex: 1;
-        }
-        .filter-date-group span {
-            color: #9ca3af;
-            font-size: 12px;
-        }
-        .filter-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 14px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #eef2f6;
-        }
-        .filter-actions .btn {
-            background: transparent;
-            border: 1px solid #e2e6ed;
-            padding: 5px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #374151;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .filter-actions .btn:hover {
-            background: #f1f5f9;
-        }
+    /* ===== 筛选区 ===== */
+    .filter-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e5e9f0;
+    }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px 16px;
+    }
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .filter-item label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .filter-item select,
+    .filter-item input {
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e6ed;
+      background: #fafbfc;
+      font-size: 13px;
+      color: #111827;
+      outline: none;
+      width: 100%;
+    }
+    .filter-item select:focus,
+    .filter-item input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+    .filter-date-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .filter-date-group input {
+      flex: 1;
+    }
+    .filter-date-group span {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    .filter-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eef2f6;
+    }
+    .filter-actions .btn {
+      background: transparent;
+      border: 1px solid #e2e6ed;
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .filter-actions .btn:hover {
+      background: #f1f5f9;
+    }
 
-        /* 卡片 */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid #eef2f6;
-            transition: 0.2s;
-            cursor: default;
-        }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-        }
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            background: #eef2ff;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #2563eb;
-        }
-        .card-body {
-            flex: 1;
-            min-width: 0;
-        }
-        .card-title {
-            font-weight: 600;
-            color: #0f172a;
-            font-size: 14px;
-        }
-        .card-desc {
-            font-size: 12px;
-            color: #6b7280;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .empty-tip {
-            color: #9ca3af;
-            font-size: 14px;
-            padding: 24px 0;
-            text-align: center;
-            grid-column: 1 / -1;
-        }
+    /* ===== 卡片 ===== */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #eef2f6;
+      transition: 0.2s;
+      cursor: default;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: #eef2ff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #2563eb;
+    }
+    .card-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .card-title {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 14px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .empty-tip {
+      color: #9ca3af;
+      font-size: 14px;
+      padding: 24px 0;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
 
-        /* 系统设置 - 部门管理 */
-        .settings-section {
-            background: #fff;
-            border-radius: 14px;
-            padding: 20px 24px;
-            border: 1px solid #eef2f6;
-        }
-        .settings-section .setting-group {
-            margin-bottom: 16px;
-        }
-        .settings-section .setting-group:last-child {
-            margin-bottom: 0;
-        }
-        .settings-section .setting-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .settings-section .setting-label small {
-            font-weight: 400;
-            font-size: 12px;
-            color: #9ca3af;
-        }
-        .settings-item-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .settings-item {
-            background: #f8fafc;
-            border: 1px solid #e5e9f0;
-            border-radius: 30px;
-            padding: 5px 14px 5px 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #1e293b;
-        }
-        .settings-item .del-btn {
-            background: transparent;
-            border: none;
-            color: #9ca3af;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 2px 4px;
-            border-radius: 20px;
-            transition: 0.15s;
-        }
-        .settings-item .del-btn:hover {
-            color: #ef4444;
-            background: #fee2e2;
-        }
+    /* ===== 系统设置 ===== */
+    .settings-section {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px 24px;
+      border: 1px solid #eef2f6;
+    }
+    .settings-section .setting-group {
+      margin-bottom: 16px;
+    }
+    .settings-section .setting-group:last-child {
+      margin-bottom: 0;
+    }
+    .settings-section .setting-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .settings-section .setting-label small {
+      font-weight: 400;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .settings-item-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .settings-item {
+      background: #f8fafc;
+      border: 1px solid #e5e9f0;
+      border-radius: 30px;
+      padding: 5px 14px 5px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #1e293b;
+    }
+    .settings-item .del-btn {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 4px;
+      border-radius: 20px;
+      transition: 0.15s;
+    }
+    .settings-item .del-btn:hover {
+      color: #ef4444;
+      background: #fee2e2;
+    }
+    .dept-add-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .dept-add-row input {
+      padding: 6px 14px;
+      border-radius: 30px;
+      border: 1px solid #e2e6ed;
+      font-size: 13px;
+      color: #111827;
+      outline: none;
+      min-width: 160px;
+      flex: 1;
+      background: #fafbfc;
+      transition: 0.15s;
+    }
+    .dept-add-row input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+    .dept-add-row .btn-add {
+      background: #2563eb;
+      border: none;
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.15s;
+      white-space: nowrap;
+    }
+    .dept-add-row .btn-add:hover {
+      background: #1d4ed8;
+    }
 
-        /* 权限横幅 */
-        .lock-banner {
-            background: #fefce8;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            padding: 10px 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .lock-banner .lock-text {
-            font-size: 13px;
-            color: #92400e;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .lock-banner .unlock-btn {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            padding: 5px 16px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.15s;
-        }
-        .lock-banner .unlock-btn:hover {
-            background: #1d4ed8;
-        }
-        .lock-banner .locked-badge {
-            background: #ef4444;
-            color: #fff;
-            padding: 1px 10px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .lock-banner .unlocked-badge {
-            background: #22c55e;
-            color: #fff;
-            padding: 1px 10px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+    /* ===== 权限横幅 ===== */
+    .lock-banner {
+      background: #fefce8;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .lock-banner .lock-text {
+      font-size: 13px;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lock-banner .unlock-btn {
+      background: #2563eb;
+      border: none;
+      color: #fff;
+      padding: 5px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .lock-banner .unlock-btn:hover {
+      background: #1d4ed8;
+    }
+    .lock-banner .locked-badge {
+      background: #ef4444;
+      color: #fff;
+      padding: 1px 10px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .lock-banner .unlocked-badge {
+      background: #22c55e;
+      color: #fff;
+      padding: 1px 10px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 600;
+    }
 
-        /* 弹窗 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(3px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal {
-            background: #fff;
-            border-radius: 20px;
-            max-width: 540px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 24px 28px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-        }
-        .modal h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .modal .form-group {
-            margin-bottom: 14px;
-        }
-        .modal .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 3px;
-        }
-        .modal .form-group input,
-        .modal .form-group select,
-        .modal .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid #e2e6ed;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-            background: #fafbfc;
-            transition: 0.15s;
-        }
-        .modal .form-group input:focus,
-        .modal .form-group select:focus,
-        .modal .form-group textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-        .modal .form-group textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        .modal .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 18px;
-        }
-        .modal-actions .btn {
-            padding: 8px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.15s;
-        }
-        .modal-actions .btn-outline {
-            background: transparent;
-            border: 1px solid #e2e6ed;
-            color: #374151;
-        }
-        .modal-actions .btn-outline:hover {
-            background: #f1f5f9;
-        }
-        .modal-actions .btn-primary {
-            background: #2563eb;
-            color: #fff;
-        }
-        .modal-actions .btn-primary:hover {
-            background: #1d4ed8;
-        }
+    /* ===== 弹窗 ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(3px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 540px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    }
+    .modal h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal .form-group {
+      margin-bottom: 14px;
+    }
+    .modal .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 3px;
+    }
+    .modal .form-group input,
+    .modal .form-group select,
+    .modal .form-group textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e6ed;
+      font-size: 13px;
+      color: #111827;
+      outline: none;
+      background: #fafbfc;
+      transition: 0.15s;
+    }
+    .modal .form-group input:focus,
+    .modal .form-group select:focus,
+    .modal .form-group textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    }
+    .modal .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .modal .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .modal-actions .btn {
+      padding: 8px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.15s;
+    }
+    .modal-actions .btn-outline {
+      background: transparent;
+      border: 1px solid #e2e6ed;
+      color: #374151;
+    }
+    .modal-actions .btn-outline:hover {
+      background: #f1f5f9;
+    }
+    .modal-actions .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
+    .modal-actions .btn-primary:hover {
+      background: #1d4ed8;
+    }
 
-        /* 密码弹窗 */
-        .password-modal .modal {
-            max-width: 360px;
-        }
-        .password-modal .form-group input {
-            text-align: center;
-            font-size: 18px;
-            letter-spacing: 6px;
-            padding: 10px;
-        }
-        .password-modal .form-group .hint {
-            font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-            margin-top: 4px;
-        }
+    /* ===== 密码弹窗 ===== */
+    .password-modal .modal {
+      max-width: 360px;
+    }
+    .password-modal .form-group input {
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 6px;
+      padding: 10px;
+    }
+    .password-modal .form-group .hint {
+      font-size: 12px;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 4px;
+    }
 
-        /* 响应式 */
-        @media (max-width: 820px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                transform: translateX(-110%);
-                width: 260px;
-                height: 100vh;
-                z-index: 1000;
-                transition: transform 0.3s ease;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .hamburger {
-                display: flex !important;
-            }
-            .overlay.active {
-                display: block !important;
-            }
-            .main-content {
-                padding: 20px 16px 30px;
-            }
-            .filter-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .card-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 10px;
-            }
-            .modal .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-        @media (max-width: 480px) {
-            .filter-grid {
-                grid-template-columns: 1fr;
-            }
-            .card-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-            .card {
-                padding: 10px 12px;
-                gap: 8px;
-            }
-            .card-icon {
-                width: 32px;
-                height: 32px;
-                min-width: 32px;
-                font-size: 14px;
-            }
-            .category-title {
-                font-size: 18px;
-            }
-            .modal {
-                padding: 16px 14px;
-            }
-            .filter-section {
-                padding: 12px 14px;
-            }
-            .settings-section {
-                padding: 14px 14px;
-            }
-        }
+    /* ===== 移动端 ===== */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 1100;
+      background: #1a2332;
+      border: none;
+      border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      color: #eef2f6;
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+    }
 
-        .hamburger {
-            display: none;
-            position: fixed;
-            top: 14px;
-            left: 14px;
-            z-index: 1100;
-            background: #1a2332;
-            border: none;
-            border-radius: 10px;
-            width: 40px;
-            height: 40px;
-            color: #eef2f6;
-            font-size: 18px;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 999;
-        }
-
-        /* 部门添加行 - 直接显示在下方 */
-        .dept-add-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .dept-add-row input {
-            padding: 6px 14px;
-            border-radius: 30px;
-            border: 1px solid #e2e6ed;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-            min-width: 160px;
-            flex: 1;
-            background: #fafbfc;
-            transition: 0.15s;
-        }
-        .dept-add-row input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-        .dept-add-row .btn-add {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.15s;
-            white-space: nowrap;
-        }
-        .dept-add-row .btn-add:hover {
-            background: #1d4ed8;
-        }
-    </style>
+    @media (max-width: 820px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translateX(-110%);
+        width: 260px;
+        height: 100vh;
+        z-index: 1000;
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .hamburger {
+        display: flex !important;
+      }
+      .overlay.active {
+        display: block !important;
+      }
+      .main-content {
+        padding: 20px 16px 30px;
+      }
+      .filter-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+      }
+      .modal .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 480px) {
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+      .card-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .card {
+        padding: 10px 12px;
+        gap: 8px;
+      }
+      .card-icon {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        font-size: 14px;
+      }
+      .category-title {
+        font-size: 18px;
+      }
+      .modal {
+        padding: 16px 14px;
+      }
+      .filter-section {
+        padding: 12px 14px;
+      }
+      .settings-section {
+        padding: 14px 14px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="overlay" id="overlay"></div>
-    <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+  <!-- ===== 移动端组件 ===== -->
+  <div class="overlay" id="overlay"></div>
+  <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-logo"><i class="fas fa-building"></i><span>招聘系统</span></div>
-        <nav class="nav-menu" id="navMenu"></nav>
-    </aside>
+  <!-- ===== 侧边栏 ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><i class="fas fa-building"></i><span>招聘系统</span></div>
+    <nav class="nav-menu" id="navMenu"></nav>
+  </aside>
 
-    <main class="main-content" id="mainContent">
-        <div id="contentContainer"></div>
-    </main>
+  <!-- ===== 主内容 ===== -->
+  <main class="main-content" id="mainContent">
+    <div id="contentContainer"></div>
+  </main>
 
-    <!-- 新增职位弹窗 -->
-    <div class="modal-overlay" id="jobModal">
-        <div class="modal">
-            <h3><i class="fas fa-briefcase" style="color:#2563eb;"></i> 新增职位</h3>
-            <div class="form-group"><label>职位名称 *</label><input type="text" id="jobTitle" placeholder="例如：前端开发工程师" /></div>
-            <div class="form-group"><label>岗位职责</label><textarea id="jobDuty" placeholder="描述岗位核心职责..."></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label>所属部门 *</label><select id="jobDept"></select></div>
-                <div class="form-group"><label>用人经理</label><input type="text" id="jobManager" placeholder="输入人员名称" /></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>职位开设时间</label><input type="date" id="jobDate" /></div>
-                <div class="form-group"><label>职位状态</label>
-                    <select id="jobStatus"><option value="招聘中" selected>招聘中</option><option value="招聘截止">招聘截止</option></select>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="modalCancel">取消</button>
-                <button class="btn btn-primary" id="modalConfirm">确认新增</button>
-            </div>
+  <!-- ===== 新增职位弹窗 ===== -->
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal">
+      <h3><i class="fas fa-briefcase" style="color:#2563eb;"></i> 新增职位</h3>
+      <div class="form-group">
+        <label>职位名称 *</label>
+        <input type="text" id="jobTitle" placeholder="例如：前端开发工程师" />
+      </div>
+      <div class="form-group">
+        <label>岗位职责</label>
+        <textarea id="jobDuty" placeholder="描述岗位核心职责..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>所属部门 *</label>
+          <select id="jobDept"></select>
         </div>
-    </div>
-
-    <!-- 密码验证弹窗 -->
-    <div class="modal-overlay password-modal" id="passwordModal">
-        <div class="modal">
-            <h3><i class="fas fa-lock" style="color:#f59e0b;"></i> 权限验证</h3>
-            <div class="form-group">
-                <label>请输入管理员密码</label>
-                <input type="password" id="adminPassword" placeholder="请输入密码" />
-                <div class="hint">默认密码：admin123</div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="passwordCancel">取消</button>
-                <button class="btn btn-primary" id="passwordConfirm">验证</button>
-            </div>
+        <div class="form-group">
+          <label>HC（人数）</label>
+          <input type="number" id="jobHC" placeholder="例如：3" min="1" />
         </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>用人经理</label>
+          <input type="text" id="jobManager" placeholder="输入人员名称" />
+        </div>
+        <div class="form-group">
+          <label>职位开设时间</label>
+          <input type="date" id="jobDate" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>职位状态</label>
+        <select id="jobStatus">
+          <option value="招聘中" selected>招聘中</option>
+          <option value="招聘截止">招聘截止</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="modalCancel">取消</button>
+        <button class="btn btn-primary" id="modalConfirm">确认新增</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // ============================================================
-        // 数据
-        // ============================================================
-        var jobCards = [];
-        var talentCards = [];
-        var departments = ['硬件研发部', '软件研发部', '经营管理部', '市场部', '品牌与体验部', '产品部'];
-        var isAdmin = false;
-        var ADMIN_PASSWORD = 'admin123';
+  <!-- ===== 密码验证弹窗 ===== -->
+  <div class="modal-overlay password-modal" id="passwordModal">
+    <div class="modal">
+      <h3><i class="fas fa-lock" style="color:#f59e0b;"></i> 权限验证</h3>
+      <div class="form-group">
+        <label>请输入管理员密码</label>
+        <input type="password" id="adminPassword" placeholder="请输入密码" />
+        <div class="hint">默认密码：admin123</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="passwordCancel">取消</button>
+        <button class="btn btn-primary" id="passwordConfirm">验证</button>
+      </div>
+    </div>
+  </div>
 
-        var categories = [
-            { id: 'jobs', label: '职位管理', icon: 'fa-briefcase' },
-            { id: 'talent', label: '人才库', icon: 'fa-users' },
-            { id: 'settings', label: '系统设置', icon: 'fa-cog' }
-        ];
+  <script>
+    // ============================================================
+    // 数据
+    // ============================================================
+    var jobCards = [];
+    var talentCards = [];
+    var departments = ['硬件研发部', '软件研发部', '经营管理部', '市场部', '品牌与体验部', '产品部'];
+    var isAdmin = false;
+    var ADMIN_PASSWORD = 'admin123';
 
-        // DOM
-        var navMenu = document.getElementById('navMenu');
-        var contentContainer = document.getElementById('contentContainer');
-        var sidebar = document.getElementById('sidebar');
-        var overlay = document.getElementById('overlay');
-        var hamburgerBtn = document.getElementById('hamburgerBtn');
-        var modalOverlay = document.getElementById('jobModal');
-        var modalCancel = document.getElementById('modalCancel');
-        var modalConfirm = document.getElementById('modalConfirm');
-        var passwordModal = document.getElementById('passwordModal');
-        var passwordCancel = document.getElementById('passwordCancel');
-        var passwordConfirm = document.getElementById('passwordConfirm');
-        var adminPasswordInput = document.getElementById('adminPassword');
+    var categories = [
+      { id: 'jobs', label: '职位管理', icon: 'fa-briefcase' },
+      { id: 'talent', label: '人才库', icon: 'fa-users' },
+      { id: 'settings', label: '系统设置', icon: 'fa-cog' }
+    ];
 
-        // ============================================================
-        // 渲染
-        // ============================================================
-        function renderNavigation() {
-            navMenu.innerHTML = '';
-            for (var i = 0; i < categories.length; i++) {
-                var cat = categories[i];
-                var btn = document.createElement('button');
-                btn.className = 'nav-btn' + (i === 0 ? ' active' : '');
-                btn.dataset.target = cat.id;
-                btn.innerHTML = '<i class="fas ' + cat.icon + '"></i> ' + cat.label;
-                btn.addEventListener('click', function() {
-                    scrollToCategory(this.dataset.target);
-                    closeMobileMenu();
-                });
-                navMenu.appendChild(btn);
-            }
-        }
+    // DOM
+    var navMenu = document.getElementById('navMenu');
+    var contentContainer = document.getElementById('contentContainer');
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('overlay');
+    var hamburgerBtn = document.getElementById('hamburgerBtn');
+    var modalOverlay = document.getElementById('jobModal');
+    var modalCancel = document.getElementById('modalCancel');
+    var modalConfirm = document.getElementById('modalConfirm');
+    var passwordModal = document.getElementById('passwordModal');
+    var passwordCancel = document.getElementById('passwordCancel');
+    var passwordConfirm = document.getElementById('passwordConfirm');
+    var adminPasswordInput = document.getElementById('adminPassword');
 
-        function renderDeptOptions(selectEl) {
-            if (!selectEl) return;
-            selectEl.innerHTML = '';
-            for (var i = 0; i < departments.length; i++) {
-                var opt = document.createElement('option');
-                opt.value = departments[i];
-                opt.textContent = departments[i];
-                selectEl.appendChild(opt);
-            }
-        }
-
-        function renderContent() {
-            var html = '';
-
-            // 职位管理
-            html += '<section class="category-block" id="section-jobs" data-category="jobs">';
-            html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>分类</small></h2>';
-            html += '<button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button></div>';
-            html += '<div class="card-grid" id="jobCardGrid">';
-            if (jobCards.length === 0) {
-                html += '<div class="empty-tip">暂无职位，点击「新增职位」添加</div>';
-            } else {
-                for (var i = 0; i < jobCards.length; i++) {
-                    var c = jobCards[i];
-                    html += '<div class="card"><div class="card-icon"><i class="fas ' + c.icon + '"></i></div>';
-                    html += '<div class="card-body"><div class="card-title">' + c.title + '</div><div class="card-desc">' + c
-                        .desc + '</div></div></div>';
-                }
-            }
-            html += '</div></section>';
-
-            // 人才库
-            html += '<section class="category-block" id="section-talent" data-category="talent">';
-            html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>分类</small></h2></div>';
-            html += '<div class="filter-section"><div class="filter-grid">';
-            html += '<div class="filter-item"><label>应聘职位</label><input type="text" id="filterPosition" placeholder="输入职位关键词" /></div>';
-            html += '<div class="filter-item"><label>候选人姓名</label><input type="text" id="filterName" placeholder="输入姓名关键词" /></div>';
-            html +=
-                '<div class="filter-item"><label>最高学历</label><select id="filterDegree"><option value="all">全部</option><option value="大专">大专</option><option value="本科">本科</option><option value="硕士">硕士</option><option value="博士">博士</option></select></div>';
-            html +=
-                '<div class="filter-item"><label>工作年限</label><select id="filterExperience"><option value="all">全部</option><option value="应届生">应届生</option><option value="1-3年">1-3年</option><option value="3-5年">3-5年</option><option value="5-10年">5-10年</option><option value="10年以上">10年以上</option></select></div>';
-            html +=
-                '<div class="filter-item"><label>当前状态</label><select id="filterStatus"><option value="all">全部</option><option value="在职">在职</option><option value="离职">离职</option><option value="待业">待业</option></select></div>';
-            html +=
-                '<div class="filter-item"><label>来源渠道</label><select id="filterSource"><option value="all">全部</option><option value="内推">内推</option><option value="官方网站">官方网站</option><option value="boss">boss</option><option value="猎头">猎头</option><option value="小红书">小红书</option></select></div>';
-            html += '<div class="filter-item"><label>投递日期</label><div class="filter-date-group"><input type="date" id="filterDateStart" /><span>至</span><input type="date" id="filterDateEnd" /></div></div>';
-            html += '</div><div class="filter-actions">';
-            html += '<button class="btn" id="filterApplyBtn"><i class="fas fa-search"></i> 筛选</button>';
-            html += '<button class="btn" id="filterResetBtn"><i class="fas fa-undo"></i> 重置</button>';
-            html += '</div></div>';
-            html += '<div class="card-grid" id="talentCardGrid">';
-            if (talentCards.length === 0) {
-                html += '<div class="empty-tip">暂无候选人</div>';
-            } else {
-                for (var j = 0; j < talentCards.length; j++) {
-                    var t = talentCards[j];
-                    html += '<div class="card"><div class="card-icon"><i class="fas ' + t.icon + '"></i></div>';
-                    html += '<div class="card-body"><div class="card-title">' + t.title + '</div><div class="card-desc">' + t
-                        .desc + '</div></div></div>';
-                }
-            }
-            html += '</div></section>';
-
-            // 系统设置
-            html += '<section class="category-block" id="section-settings" data-category="settings">';
-            html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>管理</small></h2></div>';
-            html += '<div class="settings-section">';
-            var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
-            var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
-            var badgeTxt = isAdmin ? '已解锁' : '已锁定';
-            var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
-            var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
-            var btnTxt = isAdmin ? '锁定' : '解锁';
-            html += '<div class="lock-banner" id="lockBanner">';
-            html += '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls + '">' +
-                badgeTxt + '</span> ' + statusTxt + '</div>';
-            html += '<button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt +
-            '</button>';
-            html += '</div>';
-
-            // 所属部门管理
-            html += '<div class="setting-group">';
-            html += '<div class="setting-label">';
-            html += '<span><i class="fas fa-building" style="color:#2563eb;"></i> 所属部门管理 <small>' + (isAdmin ? '（可编辑）' :
-                    '（只读）') + '</small></span>';
-            if (isAdmin) {
-                html += '<button class="btn-sm" id="showDeptAddBtn"><i class="fas fa-plus"></i> 添加部门</button>';
-            }
-            html += '</div>';
-            html += '<div class="settings-item-list" id="deptList">';
-            for (var k = 0; k < departments.length; k++) {
-                var d = departments[k];
-                html += '<div class="settings-item">' + d;
-                if (isAdmin) {
-                    html += '<button class="del-btn" data-dept="' + d + '"><i class="fas fa-times"></i></button>';
-                }
-                html += '</div>';
-            }
-            html += '</div>';
-
-            // 添加部门输入框（解锁后显示）
-            if (isAdmin) {
-                html += '<div class="dept-add-row" id="deptAddRow">';
-                html += '<input type="text" id="newDeptInput" placeholder="输入新部门名称..." />';
-                html += '<button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加</button>';
-                html += '</div>';
-            }
-
-            html += '</div></div></section>';
-
-            contentContainer.innerHTML = html;
-
-            // ============================================================
-            // 事件绑定
-            // ============================================================
-
-            // 新增职位
-            var addJobBtn = document.getElementById('addJobBtn');
-            if (addJobBtn) {
-                addJobBtn.addEventListener('click', function() {
-                    modalOverlay.classList.add('active');
-                    document.getElementById('jobTitle').value = '';
-                    document.getElementById('jobDuty').value = '';
-                    document.getElementById('jobManager').value = '';
-                    document.getElementById('jobDate').value = '';
-                    document.getElementById('jobStatus').value = '招聘中';
-                    renderDeptOptions(document.getElementById('jobDept'));
-                });
-            }
-
-            // 筛选
-            var filterApply = document.getElementById('filterApplyBtn');
-            if (filterApply) filterApply.addEventListener('click', applyTalentFilter);
-            var filterReset = document.getElementById('filterResetBtn');
-            if (filterReset) filterReset.addEventListener('click', resetTalentFilter);
-
-            var inputs = document.querySelectorAll('#talentFilter input, #talentFilter select');
-            for (var fi = 0; fi < inputs.length; fi++) {
-                inputs[fi].addEventListener('input', applyTalentFilter);
-                inputs[fi].addEventListener('change', applyTalentFilter);
-            }
-
-            // 权限切换
-            var toggleBtn = document.getElementById('toggleAdminBtn');
-            if (toggleBtn) toggleBtn.addEventListener('click', toggleAdmin);
-
-            // 显示添加部门输入框（点击"添加部门"按钮时展开）
-            var showDeptAddBtn = document.getElementById('showDeptAddBtn');
-            if (showDeptAddBtn) {
-                showDeptAddBtn.addEventListener('click', function() {
-                    var row = document.getElementById('deptAddRow');
-                    if (row) {
-                        row.style.display = row.style.display === 'none' ? 'flex' : 'none';
-                        if (row.style.display === 'flex') {
-                            document.getElementById('newDeptInput').focus();
-                        }
-                    }
-                });
-            }
-
-            // 删除部门
-            var delBtns = document.querySelectorAll('.del-btn');
-            for (var db = 0; db < delBtns.length; db++) {
-                delBtns[db].addEventListener('click', function() {
-                    if (!isAdmin) return;
-                    var deptName = this.dataset.dept;
-                    if (confirm('确定要删除部门「' + deptName + '」吗？')) {
-                        var newDepts = [];
-                        for (var idx = 0; idx < departments.length; idx++) {
-                            if (departments[idx] !== deptName) newDepts.push(departments[idx]);
-                        }
-                        departments = newDepts;
-                        updateSettingsUI();
-                        renderDeptOptions(document.getElementById('jobDept'));
-                        renderNavigation();
-                    }
-                });
-            }
-
-            // 添加部门
-            var addDeptBtn = document.getElementById('addDeptBtn');
-            if (addDeptBtn) {
-                addDeptBtn.addEventListener('click', function() {
-                    if (!isAdmin) return;
-                    var input = document.getElementById('newDeptInput');
-                    var name = input.value.trim();
-                    if (!name) { alert('请输入部门名称'); return; }
-                    for (var i = 0; i < departments.length; i++) {
-                        if (departments[i] === name) { alert('该部门已存在'); return; }
-                    }
-                    departments.push(name);
-                    input.value = '';
-                    updateSettingsUI();
-                    renderDeptOptions(document.getElementById('jobDept'));
-                    renderNavigation();
-                });
-            }
-
-            var newDeptInput = document.getElementById('newDeptInput');
-            if (newDeptInput) {
-                newDeptInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        var btn = document.getElementById('addDeptBtn');
-                        if (btn) btn.click();
-                    }
-                });
-            }
-
-            renderNavigation();
-        }
-
-        function updateSettingsUI() {
-            var list = document.getElementById('deptList');
-            if (!list) return;
-            var html = '';
-            for (var i = 0; i < departments.length; i++) {
-                var d = departments[i];
-                html += '<div class="settings-item">' + d;
-                if (isAdmin) {
-                    html += '<button class="del-btn" data-dept="' + d + '"><i class="fas fa-times"></i></button>';
-                }
-                html += '</div>';
-            }
-            list.innerHTML = html;
-
-            var delBtns = document.querySelectorAll('.del-btn');
-            for (var db = 0; db < delBtns.length; db++) {
-                delBtns[db].addEventListener('click', function() {
-                    if (!isAdmin) return;
-                    var deptName = this.dataset.dept;
-                    if (confirm('确定要删除部门「' + deptName + '」吗？')) {
-                        var newDepts = [];
-                        for (var idx = 0; idx < departments.length; idx++) {
-                            if (departments[idx] !== deptName) newDepts.push(departments[idx]);
-                        }
-                        departments = newDepts;
-                        updateSettingsUI();
-                        renderDeptOptions(document.getElementById('jobDept'));
-                        renderNavigation();
-                    }
-                });
-            }
-
-            // 更新添加部门按钮状态
-            var showBtn = document.getElementById('showDeptAddBtn');
-            var addRow = document.getElementById('deptAddRow');
-            if (isAdmin) {
-                if (!showBtn) {
-                    // 重新创建
-                }
-                if (addRow) {
-                    addRow.style.display = 'flex';
-                }
-            } else {
-                if (addRow) {
-                    addRow.style.display = 'none';
-                }
-            }
-
-            updateLockUI();
-        }
-
-        // ============================================================
-        // 权限
-        // ============================================================
-        function toggleAdmin() {
-            if (isAdmin) {
-                isAdmin = false;
-                // 重新渲染整个系统设置区域
-                renderContent();
-                // 刷新导航
-                renderNavigation();
-                // 重新绑定滚动
-                setTimeout(updateActiveNav, 150);
-            } else {
-                passwordModal.classList.add('active');
-                adminPasswordInput.value = '';
-                adminPasswordInput.focus();
-            }
-        }
-
-        function updateLockUI() {
-            var banner = document.getElementById('lockBanner');
-            if (!banner) return;
-            var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
-            var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
-            var badgeTxt = isAdmin ? '已解锁' : '已锁定';
-            var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
-            var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
-            var btnTxt = isAdmin ? '锁定' : '解锁';
-            banner.innerHTML = '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls +
-                '">' + badgeTxt + '</span> ' + statusTxt +
-                '</div><button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt +
-                '</button>';
-            document.getElementById('toggleAdminBtn').addEventListener('click', toggleAdmin);
-        }
-
-        // ============================================================
-        // 筛选
-        // ============================================================
-        function applyTalentFilter() {
-            var pos = (document.getElementById('filterPosition').value || '').trim().toLowerCase();
-            var name = (document.getElementById('filterName').value || '').trim().toLowerCase();
-            var degree = document.getElementById('filterDegree').value;
-            var exp = document.getElementById('filterExperience').value;
-            var status = document.getElementById('filterStatus').value;
-            var grid = document.getElementById('talentCardGrid');
-            if (!grid) return;
-            var cards = grid.querySelectorAll('.card');
-            var emptyTip = grid.querySelector('.empty-tip');
-            if (talentCards.length === 0) {
-                if (!emptyTip) { var tip = document.createElement('div');
-                    tip.className = 'empty-tip';
-                    tip.textContent = '暂无候选人';
-                    grid.appendChild(tip); }
-                return;
-            }
-            var hasVisible = false;
-            for (var i = 0; i < cards.length; i++) {
-                var card = cards[i];
-                var title = card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '';
-                var desc = card.querySelector('.card-desc') ? card.querySelector('.card-desc').textContent : '';
-                var fullText = (title + ' ' + desc).toLowerCase();
-                var show = true;
-                if (pos && fullText.indexOf(pos) === -1) show = false;
-                if (name && title.toLowerCase().indexOf(name) === -1) show = false;
-                if (degree !== 'all' && desc.indexOf(degree) === -1) show = false;
-                if (exp !== 'all') {
-                    var expMap = { '应届生': '应届生', '1-3年': '1-3年', '3-5年': '3-5年', '5-10年': '5-10年', '10年以上': '10年以上' };
-                    var expText = expMap[exp] || exp;
-                    if (desc.indexOf(expText) === -1) show = false;
-                }
-                if (status !== 'all' && desc.indexOf(status) === -1) show = false;
-                card.style.display = show ? '' : 'none';
-                if (show) hasVisible = true;
-            }
-            var tipEl = grid.querySelector('.empty-tip');
-            if (!hasVisible) {
-                if (!tipEl) { var nt = document.createElement('div');
-                    nt.className = 'empty-tip';
-                    nt.textContent = '没有匹配的人才';
-                    grid.appendChild(nt); }
-            } else {
-                if (tipEl) tipEl.remove();
-            }
-        }
-
-        function resetTalentFilter() {
-            document.getElementById('filterPosition').value = '';
-            document.getElementById('filterName').value = '';
-            document.getElementById('filterDegree').value = 'all';
-            document.getElementById('filterExperience').value = 'all';
-            document.getElementById('filterStatus').value = 'all';
-            document.getElementById('filterSource').value = 'all';
-            document.getElementById('filterDateStart').value = '';
-            document.getElementById('filterDateEnd').value = '';
-            applyTalentFilter();
-        }
-
-        // ============================================================
-        // 新增职位
-        // ============================================================
-        function addNewJob() {
-            var title = document.getElementById('jobTitle').value.trim();
-            var dept = document.getElementById('jobDept').value;
-            var manager = document.getElementById('jobManager').value.trim();
-            var date = document.getElementById('jobDate').value;
-            var status = document.getElementById('jobStatus').value;
-            if (!title) { alert('请输入职位名称'); return; }
-            var newCard = { title: title, desc: dept + ' · ' + (date || '近期') + ' · ' + status, icon: 'fa-briefcase' };
-            jobCards.push(newCard);
-            var grid = document.getElementById('jobCardGrid');
-            if (grid) {
-                var emptyTip = grid.querySelector('.empty-tip');
-                if (emptyTip) emptyTip.remove();
-                var cardEl = document.createElement('div');
-                cardEl.className = 'card';
-                cardEl.innerHTML = '<div class="card-icon"><i class="fas ' + newCard.icon + '"></i></div><div class="card-body"><div class="card-title">' +
-                    newCard.title + '</div><div class="card-desc">' + newCard.desc + '</div></div>';
-                grid.appendChild(cardEl);
-            }
-            modalOverlay.classList.remove('active');
-            renderNavigation();
-        }
-
-        // ============================================================
-        // 滚动
-        // ============================================================
-        function updateActiveNav() {
-            var sections = document.querySelectorAll('.category-block');
-            var currentId = '';
-            var scrollPos = window.scrollY + 100;
-            for (var i = 0; i < sections.length; i++) {
-                var s = sections[i];
-                var top = s.offsetTop;
-                var bottom = top + s.offsetHeight;
-                if (scrollPos >= top && scrollPos < bottom) { currentId = s.dataset.category; }
-            }
-            if (!currentId && sections.length > 0) {
-                var last = sections[sections.length - 1];
-                if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 10) {
-                    currentId = last.dataset.category;
-                }
-            }
-            var btns = navMenu.querySelectorAll('.nav-btn');
-            for (var j = 0; j < btns.length; j++) {
-                btns[j].classList.toggle('active', btns[j].dataset.target === currentId);
-            }
-        }
-
-        function scrollToCategory(catId) {
-            var target = document.getElementById('section-' + catId);
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                setTimeout(updateActiveNav, 100);
-            }
-        }
-
-        // ============================================================
-        // 移动端菜单
-        // ============================================================
-        function openMobileMenu() { sidebar.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; }
-
-        function closeMobileMenu() { sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = ''; }
-
-        hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            sidebar.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+    // ============================================================
+    // 渲染
+    // ============================================================
+    function renderNavigation() {
+      navMenu.innerHTML = '';
+      for (var i = 0; i < categories.length; i++) {
+        var cat = categories[i];
+        var btn = document.createElement('button');
+        btn.className = 'nav-btn' + (i === 0 ? ' active' : '');
+        btn.dataset.target = cat.id;
+        btn.innerHTML = '<i class="fas ' + cat.icon + '"></i> ' + cat.label;
+        btn.addEventListener('click', function() {
+          scrollToCategory(this.dataset.target);
+          closeMobileMenu();
         });
-        overlay.addEventListener('click', closeMobileMenu);
-        navMenu.addEventListener('click', function() { if (window.innerWidth <= 820) setTimeout(closeMobileMenu, 120); });
-        window.addEventListener('resize', function() { if (window.innerWidth > 820 && sidebar.classList.contains('open'))
-                closeMobileMenu(); });
+        navMenu.appendChild(btn);
+      }
+    }
 
-        // ============================================================
-        // 弹窗
-        // ============================================================
-        modalCancel.addEventListener('click', function() { modalOverlay.classList.remove('active'); });
-        modalConfirm.addEventListener('click', addNewJob);
-        modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) modalOverlay.classList.remove(
-                'active'); });
+    function renderDeptOptions(selectEl) {
+      if (!selectEl) return;
+      selectEl.innerHTML = '';
+      for (var i = 0; i < departments.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = departments[i];
+        opt.textContent = departments[i];
+        selectEl.appendChild(opt);
+      }
+    }
 
-        passwordCancel.addEventListener('click', function() { passwordModal.classList.remove('active'); });
-        passwordConfirm.addEventListener('click', function() {
-            if (adminPasswordInput.value.trim() === ADMIN_PASSWORD) {
-                isAdmin = true;
-                passwordModal.classList.remove('active');
-                // 重新渲染整个内容（显示输入框）
-                renderContent();
-                renderNavigation();
-                setTimeout(updateActiveNav, 150);
-            } else {
-                alert('密码错误，请重试');
-                adminPasswordInput.value = '';
-                adminPasswordInput.focus();
-            }
+    // 生成部门下拉选项（用于人才库筛选）
+    function renderDeptFilterOptions(selectEl) {
+      if (!selectEl) return;
+      selectEl.innerHTML = '<option value="all">全部</option>';
+      for (var i = 0; i < departments.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = departments[i];
+        opt.textContent = departments[i];
+        selectEl.appendChild(opt);
+      }
+    }
+
+    function renderContent() {
+      var html = '';
+
+      // ===== 职位管理 =====
+      html += '<section class="category-block" id="section-jobs" data-category="jobs">';
+      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-briefcase"></i> 职位管理 <small>分类</small></h2>';
+      html += '<button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button></div>';
+      html += '<div class="card-grid" id="jobCardGrid">';
+      if (jobCards.length === 0) {
+        html += '<div class="empty-tip">暂无职位，点击「新增职位」添加</div>';
+      } else {
+        for (var i = 0; i < jobCards.length; i++) {
+          var c = jobCards[i];
+          html += '<div class="card"><div class="card-icon"><i class="fas ' + c.icon + '"></i></div>';
+          html += '<div class="card-body"><div class="card-title">' + c.title + '</div><div class="card-desc">' + c.desc +
+            '</div></div></div>';
+        }
+      }
+      html += '</div></section>';
+
+      // ===== 人才库 =====
+      html += '<section class="category-block" id="section-talent" data-category="talent">';
+      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-users"></i> 人才库 <small>分类</small></h2></div>';
+      html += '<div class="filter-section"><div class="filter-grid">';
+      html += '<div class="filter-item"><label>应聘职位</label><input type="text" id="filterPosition" placeholder="输入职位关键词" /></div>';
+      html += '<div class="filter-item"><label>候选人姓名</label><input type="text" id="filterName" placeholder="输入姓名关键词" /></div>';
+      html +=
+        '<div class="filter-item"><label>最高学历</label><select id="filterDegree"><option value="all">全部</option><option value="大专">大专</option><option value="本科">本科</option><option value="硕士">硕士</option><option value="博士">博士</option></select></div>';
+      html +=
+        '<div class="filter-item"><label>工作年限</label><select id="filterExperience"><option value="all">全部</option><option value="应届生">应届生</option><option value="1-3年">1-3年</option><option value="3-5年">3-5年</option><option value="5-10年">5-10年</option><option value="10年以上">10年以上</option></select></div>';
+      html +=
+        '<div class="filter-item"><label>当前状态</label><select id="filterStatus"><option value="all">全部</option><option value="在职">在职</option><option value="离职">离职</option><option value="待业">待业</option></select></div>';
+      html +=
+        '<div class="filter-item"><label>来源渠道</label><select id="filterSource"><option value="all">全部</option><option value="内推">内推</option><option value="官方网站">官方网站</option><option value="boss">boss</option><option value="猎头">猎头</option><option value="小红书">小红书</option></select></div>';
+      // ---- 新增：所属部门筛选 ----
+      html += '<div class="filter-item"><label>所属部门</label><select id="filterDept"></select></div>';
+      html += '<div class="filter-item"><label>投递日期</label><div class="filter-date-group"><input type="date" id="filterDateStart" /><span>至</span><input type="date" id="filterDateEnd" /></div></div>';
+      html += '</div><div class="filter-actions">';
+      html += '<button class="btn" id="filterApplyBtn"><i class="fas fa-search"></i> 筛选</button>';
+      html += '<button class="btn" id="filterResetBtn"><i class="fas fa-undo"></i> 重置</button>';
+      html += '</div></div>';
+      html += '<div class="card-grid" id="talentCardGrid">';
+      if (talentCards.length === 0) {
+        html += '<div class="empty-tip">暂无候选人</div>';
+      } else {
+        for (var j = 0; j < talentCards.length; j++) {
+          var t = talentCards[j];
+          html += '<div class="card"><div class="card-icon"><i class="fas ' + t.icon + '"></i></div>';
+          html += '<div class="card-body"><div class="card-title">' + t.title + '</div><div class="card-desc">' + t.desc +
+            '</div></div></div>';
+        }
+      }
+      html += '</div></section>';
+
+      // ===== 系统设置 =====
+      html += '<section class="category-block" id="section-settings" data-category="settings">';
+      html += '<div class="category-header"><h2 class="category-title"><i class="fas fa-cog"></i> 系统设置 <small>管理</small></h2></div>';
+      html += '<div class="settings-section">';
+      var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
+      var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
+      var badgeTxt = isAdmin ? '已解锁' : '已锁定';
+      var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
+      var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
+      var btnTxt = isAdmin ? '锁定' : '解锁';
+      html += '<div class="lock-banner" id="lockBanner">';
+      html += '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls + '">' + badgeTxt +
+        '</span> ' + statusTxt + '</div>';
+      html += '<button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt + '</button>';
+      html += '</div>';
+
+      html += '<div class="setting-group">';
+      html += '<div class="setting-label">';
+      html += '<span><i class="fas fa-building" style="color:#2563eb;"></i> 所属部门管理 <small>' + (isAdmin ? '（可编辑）' :
+          '（只读）') + '</small></span>';
+      if (isAdmin) {
+        html += '<button class="btn-sm" id="showDeptAddBtn"><i class="fas fa-plus"></i> 添加部门</button>';
+      }
+      html += '</div>';
+      html += '<div class="settings-item-list" id="deptList">';
+      for (var k = 0; k < departments.length; k++) {
+        var d = departments[k];
+        html += '<div class="settings-item">' + d;
+        if (isAdmin) {
+          html += '<button class="del-btn" data-dept="' + d + '"><i class="fas fa-times"></i></button>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      if (isAdmin) {
+        html += '<div class="dept-add-row" id="deptAddRow">';
+        html += '<input type="text" id="newDeptInput" placeholder="输入新部门名称..." />';
+        html += '<button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加</button>';
+        html += '</div>';
+      }
+      html += '</div></div></section>';
+
+      contentContainer.innerHTML = html;
+
+      // ---- 填充部门筛选下拉 ----
+      var filterDept = document.getElementById('filterDept');
+      if (filterDept) {
+        renderDeptFilterOptions(filterDept);
+      }
+
+      // ============================================================
+      // 事件绑定
+      // ============================================================
+
+      // 新增职位
+      var addJobBtn = document.getElementById('addJobBtn');
+      if (addJobBtn) {
+        addJobBtn.addEventListener('click', function() {
+          modalOverlay.classList.add('active');
+          document.getElementById('jobTitle').value = '';
+          document.getElementById('jobDuty').value = '';
+          document.getElementById('jobManager').value = '';
+          document.getElementById('jobDate').value = '';
+          document.getElementById('jobHC').value = '';
+          document.getElementById('jobStatus').value = '招聘中';
+          renderDeptOptions(document.getElementById('jobDept'));
         });
-        adminPasswordInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') passwordConfirm.click(); });
-        passwordModal.addEventListener('click', function(e) { if (e.target === passwordModal) passwordModal.classList.remove(
-                'active'); });
+      }
 
-        // ============================================================
-        // 初始化
-        // ============================================================
-        renderNavigation();
+      // 筛选
+      var filterApply = document.getElementById('filterApplyBtn');
+      if (filterApply) filterApply.addEventListener('click', applyTalentFilter);
+      var filterReset = document.getElementById('filterResetBtn');
+      if (filterReset) filterReset.addEventListener('click', resetTalentFilter);
+
+      var inputs = document.querySelectorAll('#talentFilter input, #talentFilter select');
+      for (var fi = 0; fi < inputs.length; fi++) {
+        inputs[fi].addEventListener('input', applyTalentFilter);
+        inputs[fi].addEventListener('change', applyTalentFilter);
+      }
+
+      // 权限切换
+      var toggleBtn = document.getElementById('toggleAdminBtn');
+      if (toggleBtn) toggleBtn.addEventListener('click', toggleAdmin);
+
+      // 显示添加部门输入框
+      var showDeptAddBtn = document.getElementById('showDeptAddBtn');
+      if (showDeptAddBtn) {
+        showDeptAddBtn.addEventListener('click', function() {
+          var row = document.getElementById('deptAddRow');
+          if (row) {
+            row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+            if (row.style.display === 'flex') {
+              document.getElementById('newDeptInput').focus();
+            }
+          }
+        });
+      }
+
+      // 删除部门
+      var delBtns = document.querySelectorAll('.del-btn');
+      for (var db = 0; db < delBtns.length; db++) {
+        delBtns[db].addEventListener('click', function() {
+          if (!isAdmin) return;
+          var deptName = this.dataset.dept;
+          if (confirm('确定要删除部门「' + deptName + '」吗？')) {
+            var newDepts = [];
+            for (var idx = 0; idx < departments.length; idx++) {
+              if (departments[idx] !== deptName) newDepts.push(departments[idx]);
+            }
+            departments = newDepts;
+            updateSettingsUI();
+            renderDeptOptions(document.getElementById('jobDept'));
+            // 更新人才库筛选中的部门下拉
+            var filterDeptEl = document.getElementById('filterDept');
+            if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
+            renderNavigation();
+          }
+        });
+      }
+
+      // 添加部门
+      var addDeptBtn = document.getElementById('addDeptBtn');
+      if (addDeptBtn) {
+        addDeptBtn.addEventListener('click', function() {
+          if (!isAdmin) return;
+          var input = document.getElementById('newDeptInput');
+          var name = input.value.trim();
+          if (!name) { alert('请输入部门名称'); return; }
+          for (var i = 0; i < departments.length; i++) {
+            if (departments[i] === name) { alert('该部门已存在'); return; }
+          }
+          departments.push(name);
+          input.value = '';
+          updateSettingsUI();
+          renderDeptOptions(document.getElementById('jobDept'));
+          var filterDeptEl = document.getElementById('filterDept');
+          if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
+          renderNavigation();
+        });
+      }
+
+      var newDeptInput = document.getElementById('newDeptInput');
+      if (newDeptInput) {
+        newDeptInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            var btn = document.getElementById('addDeptBtn');
+            if (btn) btn.click();
+          }
+        });
+      }
+
+      renderNavigation();
+    }
+
+    function updateSettingsUI() {
+      var list = document.getElementById('deptList');
+      if (!list) return;
+      var html = '';
+      for (var i = 0; i < departments.length; i++) {
+        var d = departments[i];
+        html += '<div class="settings-item">' + d;
+        if (isAdmin) {
+          html += '<button class="del-btn" data-dept="' + d + '"><i class="fas fa-times"></i></button>';
+        }
+        html += '</div>';
+      }
+      list.innerHTML = html;
+
+      var delBtns = document.querySelectorAll('.del-btn');
+      for (var db = 0; db < delBtns.length; db++) {
+        delBtns[db].addEventListener('click', function() {
+          if (!isAdmin) return;
+          var deptName = this.dataset.dept;
+          if (confirm('确定要删除部门「' + deptName + '」吗？')) {
+            var newDepts = [];
+            for (var idx = 0; idx < departments.length; idx++) {
+              if (departments[idx] !== deptName) newDepts.push(departments[idx]);
+            }
+            departments = newDepts;
+            updateSettingsUI();
+            renderDeptOptions(document.getElementById('jobDept'));
+            var filterDeptEl = document.getElementById('filterDept');
+            if (filterDeptEl) renderDeptFilterOptions(filterDeptEl);
+            renderNavigation();
+          }
+        });
+      }
+
+      var showBtn = document.getElementById('showDeptAddBtn');
+      var addRow = document.getElementById('deptAddRow');
+      if (isAdmin) {
+        if (addRow) addRow.style.display = 'flex';
+      } else {
+        if (addRow) addRow.style.display = 'none';
+      }
+
+      updateLockUI();
+    }
+
+    // ============================================================
+    // 权限
+    // ============================================================
+    function toggleAdmin() {
+      if (isAdmin) {
+        isAdmin = false;
         renderContent();
-
-        var ticking = false;
-        window.addEventListener('scroll', function() {
-            if (!ticking) {
-                window.requestAnimationFrame(function() { updateActiveNav();
-                    ticking = false; });
-                ticking = true;
-            }
-        });
+        renderNavigation();
         setTimeout(updateActiveNav, 150);
-    </script>
+      } else {
+        passwordModal.classList.add('active');
+        adminPasswordInput.value = '';
+        adminPasswordInput.focus();
+      }
+    }
+
+    function updateLockUI() {
+      var banner = document.getElementById('lockBanner');
+      if (!banner) return;
+      var lockIcon = isAdmin ? 'fa-unlock' : 'fa-lock';
+      var badgeCls = isAdmin ? 'unlocked-badge' : 'locked-badge';
+      var badgeTxt = isAdmin ? '已解锁' : '已锁定';
+      var statusTxt = isAdmin ? '✅ 您拥有管理权限' : '🔒 需要管理员密码才能编辑';
+      var btnIcon = isAdmin ? 'fa-lock' : 'fa-key';
+      var btnTxt = isAdmin ? '锁定' : '解锁';
+      banner.innerHTML = '<div class="lock-text"><i class="fas ' + lockIcon + '"></i> 当前状态：<span class="' + badgeCls +
+        '">' + badgeTxt + '</span> ' + statusTxt +
+        '</div><button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt + '</button>';
+      document.getElementById('toggleAdminBtn').addEventListener('click', toggleAdmin);
+    }
+
+    // ============================================================
+    // 筛选（含所属部门）
+    // ============================================================
+    function applyTalentFilter() {
+      var pos = (document.getElementById('filterPosition').value || '').trim().toLowerCase();
+      var name = (document.getElementById('filterName').value || '').trim().toLowerCase();
+      var degree = document.getElementById('filterDegree').value;
+      var exp = document.getElementById('filterExperience').value;
+      var status = document.getElementById('filterStatus').value;
+      var dept = document.getElementById('filterDept').value; // 新增
+
+      var grid = document.getElementById('talentCardGrid');
+      if (!grid) return;
+      var cards = grid.querySelectorAll('.card');
+      var emptyTip = grid.querySelector('.empty-tip');
+
+      if (talentCards.length === 0) {
+        if (!emptyTip) { var tip = document.createElement('div');
+          tip.className = 'empty-tip';
+          tip.textContent = '暂无候选人';
+          grid.appendChild(tip); }
+        return;
+      }
+
+      var hasVisible = false;
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var title = card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '';
+        var desc = card.querySelector('.card-desc') ? card.querySelector('.card-desc').textContent : '';
+        var fullText = (title + ' ' + desc).toLowerCase();
+
+        var show = true;
+        if (pos && fullText.indexOf(pos) === -1) show = false;
+        if (name && title.toLowerCase().indexOf(name) === -1) show = false;
+        if (degree !== 'all' && desc.indexOf(degree) === -1) show = false;
+        if (exp !== 'all') {
+          var expMap = { '应届生': '应届生', '1-3年': '1-3年', '3-5年': '3-5年', '5-10年': '5-10年', '10年以上': '10年以上' };
+          var expText = expMap[exp] || exp;
+          if (desc.indexOf(expText) === -1) show = false;
+        }
+        if (status !== 'all' && desc.indexOf(status) === -1) show = false;
+        // ---- 新增：所属部门筛选 ----
+        if (dept !== 'all' && desc.indexOf(dept) === -1) show = false;
+
+        card.style.display = show ? '' : 'none';
+        if (show) hasVisible = true;
+      }
+
+      var tipEl = grid.querySelector('.empty-tip');
+      if (!hasVisible) {
+        if (!tipEl) { var nt = document.createElement('div');
+          nt.className = 'empty-tip';
+          nt.textContent = '没有匹配的人才';
+          grid.appendChild(nt); }
+      } else {
+        if (tipEl) tipEl.remove();
+      }
+    }
+
+    function resetTalentFilter() {
+      document.getElementById('filterPosition').value = '';
+      document.getElementById('filterName').value = '';
+      document.getElementById('filterDegree').value = 'all';
+      document.getElementById('filterExperience').value = 'all';
+      document.getElementById('filterStatus').value = 'all';
+      document.getElementById('filterSource').value = 'all';
+      document.getElementById('filterDept').value = 'all';
+      document.getElementById('filterDateStart').value = '';
+      document.getElementById('filterDateEnd').value = '';
+      applyTalentFilter();
+    }
+
+    // ============================================================
+    // 新增职位（含HC）
+    // ============================================================
+    function addNewJob() {
+      var title = document.getElementById('jobTitle').value.trim();
+      var dept = document.getElementById('jobDept').value;
+      var hc = document.getElementById('jobHC').value.trim();
+      var manager = document.getElementById('jobManager').value.trim();
+      var date = document.getElementById('jobDate').value;
+      var status = document.getElementById('jobStatus').value;
+
+      if (!title) { alert('请输入职位名称'); return; }
+
+      var hcText = hc ? ' · HC:' + hc : '';
+      var newCard = {
+        title: title,
+        desc: dept + ' · ' + (date || '近期') + ' · ' + status + hcText,
+        icon: 'fa-briefcase'
+      };
+      jobCards.push(newCard);
+
+      var grid = document.getElementById('jobCardGrid');
+      if (grid) {
+        var emptyTip = grid.querySelector('.empty-tip');
+        if (emptyTip) emptyTip.remove();
+        var cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.innerHTML = '<div class="card-icon"><i class="fas ' + newCard.icon + '"></i></div><div class="card-body"><div class="card-title">' +
+          newCard.title + '</div><div class="card-desc">' + newCard.desc + '</div></div>';
+        grid.appendChild(cardEl);
+      }
+
+      modalOverlay.classList.remove('active');
+      renderNavigation();
+    }
+
+    // ============================================================
+    // 滚动
+    // ============================================================
+    function updateActiveNav() {
+      var sections = document.querySelectorAll('.category-block');
+      var currentId = '';
+      var scrollPos = window.scrollY + 100;
+      for (var i = 0; i < sections.length; i++) {
+        var s = sections[i];
+        var top = s.offsetTop;
+        var bottom = top + s.offsetHeight;
+        if (scrollPos >= top && scrollPos < bottom) { currentId = s.dataset.category; }
+      }
+      if (!currentId && sections.length > 0) {
+        var last = sections[sections.length - 1];
+        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 10) {
+          currentId = last.dataset.category;
+        }
+      }
+      var btns = navMenu.querySelectorAll('.nav-btn');
+      for (var j = 0; j < btns.length; j++) {
+        btns[j].classList.toggle('active', btns[j].dataset.target === currentId);
+      }
+    }
+
+    function scrollToCategory(catId) {
+      var target = document.getElementById('section-' + catId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(updateActiveNav, 100);
+      }
+    }
+
+    // ============================================================
+    // 移动端菜单
+    // ============================================================
+    function openMobileMenu() { sidebar.classList.add('open');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; }
+
+    function closeMobileMenu() { sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = ''; }
+
+    hamburgerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sidebar.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+    });
+    overlay.addEventListener('click', closeMobileMenu);
+    navMenu.addEventListener('click', function() { if (window.innerWidth <= 820) setTimeout(closeMobileMenu, 120); });
+    window.addEventListener('resize', function() { if (window.innerWidth > 820 && sidebar.classList.contains('open'))
+        closeMobileMenu(); });
+
+    // ============================================================
+    // 弹窗
+    // ============================================================
+    modalCancel.addEventListener('click', function() { modalOverlay.classList.remove('active'); });
+    modalConfirm.addEventListener('click', addNewJob);
+    modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) modalOverlay.classList.remove(
+        'active'); });
+
+    passwordCancel.addEventListener('click', function() { passwordModal.classList.remove('active'); });
+    passwordConfirm.addEventListener('click', function() {
+      if (adminPasswordInput.value.trim() === ADMIN_PASSWORD) {
+        isAdmin = true;
+        passwordModal.classList.remove('active');
+        renderContent();
+        renderNavigation();
+        setTimeout(updateActiveNav, 150);
+      } else {
+        alert('密码错误，请重试');
+        adminPasswordInput.value = '';
+        adminPasswordInput.focus();
+      }
+    });
+    adminPasswordInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') passwordConfirm.click(); });
+    passwordModal.addEventListener('click', function(e) { if (e.target === passwordModal) passwordModal.classList.remove(
+        'active'); });
+
+    // ============================================================
+    // 初始化
+    // ============================================================
+    renderNavigation();
+    renderContent();
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() { updateActiveNav();
+          ticking = false; });
+        ticking = true;
+      }
+    });
+    setTimeout(updateActiveNav, 150);
+  </script>
 </body>
 </html>
