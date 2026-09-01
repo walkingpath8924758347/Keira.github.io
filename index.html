@@ -141,6 +141,23 @@
         .btn-primary:hover {
             background: #1d4ed8;
         }
+        .btn-sm {
+            background: #2563eb;
+            border: none;
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+        .btn-sm:hover {
+            background: #1d4ed8;
+        }
 
         /* 筛选 */
         .filter-section {
@@ -297,7 +314,9 @@
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .settings-section .setting-label small {
             font-weight: 400;
@@ -333,44 +352,6 @@
         .settings-item .del-btn:hover {
             color: #ef4444;
             background: #fee2e2;
-        }
-        .settings-add-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-        .settings-add-row input {
-            padding: 7px 14px;
-            border-radius: 30px;
-            border: 1px solid #e2e6ed;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-            min-width: 160px;
-            flex: 1;
-            background: #fafbfc;
-            transition: 0.15s;
-        }
-        .settings-add-row input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-        .settings-add-row .btn-add {
-            background: #2563eb;
-            border: none;
-            color: #fff;
-            padding: 7px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.15s;
-            white-space: nowrap;
-        }
-        .settings-add-row .btn-add:hover {
-            background: #1d4ed8;
         }
 
         /* 权限横幅 */
@@ -579,10 +560,6 @@
             .modal .form-row {
                 grid-template-columns: 1fr;
             }
-            .settings-add-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
         }
         @media (max-width: 480px) {
             .filter-grid {
@@ -639,6 +616,46 @@
             inset: 0;
             background: rgba(0, 0, 0, 0.3);
             z-index: 999;
+        }
+
+        /* 部门添加行 - 直接显示在下方 */
+        .dept-add-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .dept-add-row input {
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #e2e6ed;
+            font-size: 13px;
+            color: #111827;
+            outline: none;
+            min-width: 160px;
+            flex: 1;
+            background: #fafbfc;
+            transition: 0.15s;
+        }
+        .dept-add-row input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+        .dept-add-row .btn-add {
+            background: #2563eb;
+            border: none;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .dept-add-row .btn-add:hover {
+            background: #1d4ed8;
         }
     </style>
 </head>
@@ -823,9 +840,16 @@
             html += '<button class="unlock-btn" id="toggleAdminBtn"><i class="fas ' + btnIcon + '"></i> ' + btnTxt +
             '</button>';
             html += '</div>';
+
+            // 所属部门管理
             html += '<div class="setting-group">';
-            html += '<div class="setting-label"><i class="fas fa-building" style="color:#2563eb;"></i> 所属部门管理 <small>' +
-                (isAdmin ? '（可编辑）' : '（只读）') + '</small></div>';
+            html += '<div class="setting-label">';
+            html += '<span><i class="fas fa-building" style="color:#2563eb;"></i> 所属部门管理 <small>' + (isAdmin ? '（可编辑）' :
+                    '（只读）') + '</small></span>';
+            if (isAdmin) {
+                html += '<button class="btn-sm" id="showDeptAddBtn"><i class="fas fa-plus"></i> 添加部门</button>';
+            }
+            html += '</div>';
             html += '<div class="settings-item-list" id="deptList">';
             for (var k = 0; k < departments.length; k++) {
                 var d = departments[k];
@@ -836,17 +860,24 @@
                 html += '</div>';
             }
             html += '</div>';
+
+            // 添加部门输入框（解锁后显示）
             if (isAdmin) {
-                html += '<div class="settings-add-row">';
+                html += '<div class="dept-add-row" id="deptAddRow">';
                 html += '<input type="text" id="newDeptInput" placeholder="输入新部门名称..." />';
-                html += '<button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加部门</button>';
+                html += '<button class="btn-add" id="addDeptBtn"><i class="fas fa-plus"></i> 添加</button>';
                 html += '</div>';
             }
+
             html += '</div></div></section>';
 
             contentContainer.innerHTML = html;
 
+            // ============================================================
             // 事件绑定
+            // ============================================================
+
+            // 新增职位
             var addJobBtn = document.getElementById('addJobBtn');
             if (addJobBtn) {
                 addJobBtn.addEventListener('click', function() {
@@ -860,6 +891,7 @@
                 });
             }
 
+            // 筛选
             var filterApply = document.getElementById('filterApplyBtn');
             if (filterApply) filterApply.addEventListener('click', applyTalentFilter);
             var filterReset = document.getElementById('filterResetBtn');
@@ -871,8 +903,23 @@
                 inputs[fi].addEventListener('change', applyTalentFilter);
             }
 
+            // 权限切换
             var toggleBtn = document.getElementById('toggleAdminBtn');
             if (toggleBtn) toggleBtn.addEventListener('click', toggleAdmin);
+
+            // 显示添加部门输入框（点击"添加部门"按钮时展开）
+            var showDeptAddBtn = document.getElementById('showDeptAddBtn');
+            if (showDeptAddBtn) {
+                showDeptAddBtn.addEventListener('click', function() {
+                    var row = document.getElementById('deptAddRow');
+                    if (row) {
+                        row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+                        if (row.style.display === 'flex') {
+                            document.getElementById('newDeptInput').focus();
+                        }
+                    }
+                });
+            }
 
             // 删除部门
             var delBtns = document.querySelectorAll('.del-btn');
@@ -956,6 +1003,23 @@
                     }
                 });
             }
+
+            // 更新添加部门按钮状态
+            var showBtn = document.getElementById('showDeptAddBtn');
+            var addRow = document.getElementById('deptAddRow');
+            if (isAdmin) {
+                if (!showBtn) {
+                    // 重新创建
+                }
+                if (addRow) {
+                    addRow.style.display = 'flex';
+                }
+            } else {
+                if (addRow) {
+                    addRow.style.display = 'none';
+                }
+            }
+
             updateLockUI();
         }
 
@@ -965,9 +1029,12 @@
         function toggleAdmin() {
             if (isAdmin) {
                 isAdmin = false;
-                updateLockUI();
-                updateSettingsUI();
+                // 重新渲染整个系统设置区域
+                renderContent();
+                // 刷新导航
                 renderNavigation();
+                // 重新绑定滚动
+                setTimeout(updateActiveNav, 150);
             } else {
                 passwordModal.classList.add('active');
                 adminPasswordInput.value = '';
@@ -1145,9 +1212,10 @@
             if (adminPasswordInput.value.trim() === ADMIN_PASSWORD) {
                 isAdmin = true;
                 passwordModal.classList.remove('active');
-                updateLockUI();
-                updateSettingsUI();
+                // 重新渲染整个内容（显示输入框）
+                renderContent();
                 renderNavigation();
+                setTimeout(updateActiveNav, 150);
             } else {
                 alert('密码错误，请重试');
                 adminPasswordInput.value = '';
