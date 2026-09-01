@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
-  <title>职位管理 · 人才库</title>
-  <!-- Font Awesome 6 -->
+  <title>招聘系统 · 职位与人才库</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     * {
@@ -15,19 +14,19 @@
     }
 
     body {
-      background: #f5f7fc;
+      background: #f2f4f8;
       display: flex;
       min-height: 100vh;
     }
 
-    /* ===== 左侧导航 ===== */
+    /* ===== 左侧导航栏 - 高级灰 ===== */
     .sidebar {
       position: sticky;
       top: 0;
       height: 100vh;
       width: 270px;
-      background: #ffffff;
-      box-shadow: 2px 0 16px rgba(0, 0, 0, 0.04);
+      background: #2d3138;
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.12);
       padding: 28px 16px 32px 24px;
       display: flex;
       flex-direction: column;
@@ -35,7 +34,7 @@
       overflow-y: auto;
       transition: transform 0.25s ease, box-shadow 0.2s;
       z-index: 1000;
-      border-right: 1px solid rgba(0, 0, 0, 0.02);
+      border-right: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .sidebar-logo {
@@ -44,13 +43,13 @@
       gap: 10px;
       font-size: 22px;
       font-weight: 600;
-      color: #1e293b;
+      color: #e8edf5;
       letter-spacing: -0.3px;
       margin-bottom: 40px;
       padding-left: 4px;
     }
     .sidebar-logo i {
-      color: #3b82f6;
+      color: #7b8ca8;
       font-size: 28px;
     }
 
@@ -71,7 +70,7 @@
       border-radius: 12px;
       font-size: 15px;
       font-weight: 500;
-      color: #475569;
+      color: #a6b3cc;
       cursor: pointer;
       transition: all 0.15s;
       width: 100%;
@@ -80,55 +79,56 @@
     .nav-btn i {
       width: 22px;
       font-size: 18px;
-      color: #64748b;
+      color: #7b8ca8;
       transition: color 0.2s;
     }
     .nav-btn:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      background: #3a3f48;
+      color: #e8edf5;
     }
     .nav-btn:hover i {
-      color: #3b82f6;
+      color: #b0c4e0;
     }
     .nav-btn.active {
-      background: #eef2ff;
-      color: #1e293b;
+      background: #3e4550;
+      color: #ffffff;
       font-weight: 600;
-      box-shadow: inset 3px 0 0 #3b82f6;
+      box-shadow: inset 3px 0 0 #7b8ca8;
     }
     .nav-btn.active i {
-      color: #3b82f6;
+      color: #b0c4e0;
     }
 
-    /* 移动端 */
+    /* 移动端汉堡菜单 */
     .hamburger {
       display: none;
       position: fixed;
       top: 18px;
       left: 18px;
       z-index: 1100;
-      background: white;
+      background: #2d3138;
       border: none;
       border-radius: 40px;
       width: 48px;
       height: 48px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
       font-size: 24px;
-      color: #1e293b;
+      color: #e8edf5;
       cursor: pointer;
       transition: 0.2s;
       align-items: center;
       justify-content: center;
     }
     .hamburger:hover {
-      background: #f1f5f9;
+      background: #3a3f48;
     }
+
     .overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(2px);
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(3px);
       z-index: 999;
       transition: opacity 0.25s;
     }
@@ -158,7 +158,7 @@
     .category-title {
       font-size: 26px;
       font-weight: 600;
-      color: #0f172a;
+      color: #1e293b;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -334,9 +334,11 @@
       color: #94a3b8;
       font-size: 14px;
       padding: 16px 0;
+      text-align: center;
+      width: 100%;
     }
 
-    /* ===== 弹窗 (Modal) ===== */
+    /* ===== 弹窗 ===== */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -452,7 +454,7 @@
         left: 0;
         width: 280px;
         height: 100vh;
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
         border-right: none;
       }
       .sidebar.open {
@@ -508,7 +510,7 @@
   <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
 
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><i class="fas fa-compass"></i><span>导航</span></div>
+    <div class="sidebar-logo"><i class="fas fa-building"></i><span>招聘系统</span></div>
     <nav class="nav-menu" id="navMenu"></nav>
   </aside>
 
@@ -553,7 +555,7 @@
         <div class="form-group">
           <label>职位状态</label>
           <select id="jobStatus">
-            <option value="招聘中">招聘中</option>
+            <option value="招聘中" selected>招聘中</option>
             <option value="招聘截止">招聘截止</option>
           </select>
         </div>
@@ -567,24 +569,9 @@
 
   <script>
     (function() {
-      // ---------- 数据 ----------
-      // 职位管理卡片 (初始)
-      let jobCards = [
-        { title: '前端开发工程师', desc: '北京 · 3-5年 · 本科', icon: 'fa-code' },
-        { title: '产品经理', desc: '上海 · 5-10年 · 硕士', icon: 'fa-tasks' },
-        { title: 'UI/UX 设计师', desc: '深圳 · 2-4年 · 本科', icon: 'fa-paint-brush' },
-        { title: '后端架构师', desc: '杭州 · 8年以上 · 本科', icon: 'fa-server' },
-      ];
-
-      // 人才库卡片 (初始)
-      let talentCards = [
-        { title: '张明', desc: '前端 · 5年经验 · 本科', icon: 'fa-user' },
-        { title: '李丽', desc: '产品 · 8年经验 · 硕士', icon: 'fa-user' },
-        { title: '王强', desc: '设计 · 4年经验 · 本科', icon: 'fa-user' },
-        { title: '赵雪', desc: '后端 · 6年经验 · 本科', icon: 'fa-user' },
-        { title: '陈晨', desc: '数据分析 · 3年经验 · 硕士', icon: 'fa-user' },
-        { title: '刘洋', desc: '运维 · 7年经验 · 本科', icon: 'fa-user' },
-      ];
+      // ---------- 数据 (初始为空) ----------
+      let jobCards = [];      // 职位管理卡片
+      let talentCards = [];   // 人才库卡片 (初始为空)
 
       // 分类配置
       const categories = [
@@ -602,7 +589,6 @@
       const modalCancel = document.getElementById('modalCancel');
       const modalConfirm = document.getElementById('modalConfirm');
 
-      // 筛选器引用 (动态)
       let filterInputs = {};
 
       // ---------- 渲染导航 ----------
@@ -632,15 +618,19 @@
           <button class="btn-primary" id="addJobBtn"><i class="fas fa-plus"></i> 新增职位</button>
         </div>`;
         html += `<div class="card-grid" id="jobCardGrid">`;
-        jobCards.forEach(card => {
-          html += `<div class="card">
-            <div class="card-icon"><i class="fas ${card.icon}"></i></div>
-            <div class="card-body">
-              <div class="card-title">${card.title}</div>
-              <div class="card-desc">${card.desc}</div>
-            </div>
-          </div>`;
-        });
+        if (jobCards.length === 0) {
+          html += `<div class="empty-tip">暂无职位，点击「新增职位」添加</div>`;
+        } else {
+          jobCards.forEach(card => {
+            html += `<div class="card">
+              <div class="card-icon"><i class="fas ${card.icon}"></i></div>
+              <div class="card-body">
+                <div class="card-title">${card.title}</div>
+                <div class="card-desc">${card.desc}</div>
+              </div>
+            </div>`;
+          });
+        }
         html += `</div></section>`;
 
         // ---- 人才库 ----
@@ -718,24 +708,26 @@
 
         // 人才卡片网格
         html += `<div class="card-grid" id="talentCardGrid">`;
-        talentCards.forEach(card => {
-          html += `<div class="card">
-            <div class="card-icon"><i class="fas ${card.icon}"></i></div>
-            <div class="card-body">
-              <div class="card-title">${card.title}</div>
-              <div class="card-desc">${card.desc}</div>
-            </div>
-          </div>`;
-        });
+        if (talentCards.length === 0) {
+          html += `<div class="empty-tip">暂无候选人</div>`;
+        } else {
+          talentCards.forEach(card => {
+            html += `<div class="card">
+              <div class="card-icon"><i class="fas ${card.icon}"></i></div>
+              <div class="card-body">
+                <div class="card-title">${card.title}</div>
+                <div class="card-desc">${card.desc}</div>
+              </div>
+            </div>`;
+          });
+        }
         html += `</div></section>`;
 
         contentContainer.innerHTML = html;
 
         // ---- 绑定事件 ----
-        // 新增职位按钮
         document.getElementById('addJobBtn')?.addEventListener('click', () => {
           modalOverlay.classList.add('active');
-          // 清空表单
           document.getElementById('jobTitle').value = '';
           document.getElementById('jobDuty').value = '';
           document.getElementById('jobDept').value = '软件研发部';
@@ -744,17 +736,14 @@
           document.getElementById('jobStatus').value = '招聘中';
         });
 
-        // 筛选按钮
         document.getElementById('filterApplyBtn')?.addEventListener('click', applyTalentFilter);
         document.getElementById('filterResetBtn')?.addEventListener('click', resetTalentFilter);
 
-        // 筛选输入实时触发 (为了更好的体验，输入即筛选)
         document.querySelectorAll('#talentFilter input, #talentFilter select').forEach(el => {
           el.addEventListener('input', applyTalentFilter);
           el.addEventListener('change', applyTalentFilter);
         });
 
-        // 初始化筛选引用
         filterInputs = {
           position: document.getElementById('filterPosition'),
           name: document.getElementById('filterName'),
@@ -767,93 +756,59 @@
         };
       }
 
-      // ---------- 人才库筛选逻辑 (模糊匹配) ----------
+      // ---------- 人才库筛选 ----------
       function applyTalentFilter() {
         const pos = (filterInputs.position?.value || '').trim().toLowerCase();
         const name = (filterInputs.name?.value || '').trim().toLowerCase();
         const degree = filterInputs.degree?.value || 'all';
         const exp = filterInputs.experience?.value || 'all';
         const status = filterInputs.status?.value || 'all';
-        const source = filterInputs.source?.value || 'all';
-        const dateStart = filterInputs.dateStart?.value;
-        const dateEnd = filterInputs.dateEnd?.value;
 
         const grid = document.getElementById('talentCardGrid');
         if (!grid) return;
         const cards = grid.querySelectorAll('.card');
+        const emptyTip = grid.querySelector('.empty-tip');
 
-        // 模拟数据中自带 desc 包含 职位/年限/学历/状态/来源/日期 等，实际项目应从数据源过滤。
-        // 此处我们用卡片描述字段做模糊匹配，并加入一些扩展字段模拟
-        // 由于卡片数据有限，我们根据 desc 和 title 进行匹配，并加入额外模拟属性。
-        // 实际使用中，应基于真实数据结构。
+        // 如果无候选人数据，直接显示空状态
+        if (talentCards.length === 0) {
+          if (!emptyTip) {
+            const tip = document.createElement('div');
+            tip.className = 'empty-tip';
+            tip.textContent = '暂无候选人';
+            grid.appendChild(tip);
+          }
+          return;
+        }
 
-        cards.forEach((card, index) => {
+        let hasVisible = false;
+        cards.forEach((card) => {
           const title = card.querySelector('.card-title')?.textContent || '';
           const desc = card.querySelector('.card-desc')?.textContent || '';
           const fullText = (title + ' ' + desc).toLowerCase();
 
           let show = true;
 
-          // 1. 职位模糊匹配 (desc 中包含职位关键词)
-          if (pos) {
-            // 检查 desc 或 title 中是否包含关键词 (模糊)
-            const posMatch = fullText.includes(pos);
-            if (!posMatch) show = false;
-          }
-
-          // 2. 姓名模糊匹配
-          if (name && show) {
-            if (!title.toLowerCase().includes(name)) show = false;
-          }
-
-          // 3. 学历 (从desc中提取 大专/本科/硕士/博士)
-          if (degree !== 'all' && show) {
-            const hasDegree = desc.includes(degree);
-            if (!hasDegree) show = false;
-          }
-
-          // 4. 工作年限 (从desc中提取)
-          if (exp !== 'all' && show) {
-            let expMap = {
-              '应届生': '应届生',
-              '1-3年': '1-3年',
-              '3-5年': '3-5年',
-              '5-10年': '5-10年',
-              '10年以上': '10年以上'
-            };
+          if (pos && !fullText.includes(pos)) show = false;
+          if (name && !title.toLowerCase().includes(name)) show = false;
+          if (degree !== 'all' && !desc.includes(degree)) show = false;
+          if (exp !== 'all') {
+            const expMap = { '应届生': '应届生', '1-3年': '1-3年', '3-5年': '3-5年', '5-10年': '5-10年', '10年以上': '10年以上' };
             const expText = expMap[exp] || exp;
             if (!desc.includes(expText)) show = false;
           }
-
-          // 5. 当前状态 (模拟，从desc中提取在职/离职/待业)
-          if (status !== 'all' && show) {
-            if (!desc.includes(status)) show = false;
-          }
-
-          // 6. 来源渠道 (模拟，不强制)
-          if (source !== 'all' && show) {
-            // 简单模拟：部分卡片有来源信息
-            const sources = ['内推', '官方网站', 'boss', '猎头', '小红书'];
-            if (!desc.includes(source) && !sources.some(s => desc.includes(s) && s === source)) {
-              // 宽松处理：如果desc中不包含，默认显示
-              // 这里为了演示，保留所有
-            }
-          }
-
-          // 7. 日期范围 (不强制，略过)
+          if (status !== 'all' && !desc.includes(status)) show = false;
 
           card.style.display = show ? '' : 'none';
+          if (show) hasVisible = true;
         });
 
-        // 如果全部隐藏，显示空提示
-        const visible = grid.querySelectorAll('.card[style*="display: none"]');
-        let emptyTip = grid.querySelector('.empty-tip');
-        if (visible.length === cards.length && cards.length > 0) {
+        // 处理空状态提示
+        if (!hasVisible) {
           if (!emptyTip) {
-            emptyTip = document.createElement('div');
-            emptyTip.className = 'empty-tip';
-            emptyTip.textContent = '没有匹配的人才';
-            grid.appendChild(emptyTip);
+            const tip = document.createElement('div');
+            tip.className = 'empty-tip';
+            tip.textContent = '没有匹配的人才';
+            grid.appendChild(tip);
           }
         } else {
           if (emptyTip) emptyTip.remove();
@@ -894,6 +849,10 @@
         jobCards.push(newCard);
         const grid = document.getElementById('jobCardGrid');
         if (grid) {
+          // 移除空提示
+          const emptyTip = grid.querySelector('.empty-tip');
+          if (emptyTip) emptyTip.remove();
+
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
           cardEl.innerHTML = `
